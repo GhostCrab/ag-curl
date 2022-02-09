@@ -1,7 +1,6 @@
-<h2>My Games</h2>
 <ul class="games">
     <li *ngFor="let game of games">
-        <a routerLink="/detail/{{ game.id }}">
+        <a href='{{ game.url }}' target="_blank" rel="noopener noreferrer">
             <span class="badge">{{ game.id }}</span> {{ game.name }}
         </a>
     </li>

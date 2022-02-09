@@ -17,6 +17,6 @@ export class DashboardComponent implements OnInit {
     }
 
     getGames(): void {
-        this.games = this.gameService.getGames();
+        //
     }
 }

@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
     styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-    title = 'ag-curl';
+    title = 'Winter Olympics 2022 Curling Pool';
 }
