@@ -52,50 +52,6 @@ export class GameService {
         );
     }
 
-    /* GET games whose name contains search term */
-    searchGames(term: string): Observable<Game[]> {
-        if (!term.trim()) {
-            // if not search term, return empty game array.
-            return of([]);
-        }
-        return this.http.get<Game[]>(`${this.gamesUrl}/?name=${term}`).pipe(
-            tap((x) =>
-                x.length
-                    ? this.log(`found games matching "${term}"`)
-                    : this.log(`no games matching "${term}"`)
-            ),
-            catchError(this.handleError<Game[]>('searchGames', []))
-        );
-    }
-
-    //////// Save methods //////////
-
-    /** POST: add a new game to the server */
-    addGame(game: Game): Observable<Game> {
-        return this.http.post<Game>(this.gamesUrl, game, this.httpOptions).pipe(
-            tap((newGame: Game) => this.log(`added game w/ id=${newGame.id}`)),
-            catchError(this.handleError<Game>('addGame'))
-        );
-    }
-
-    /** DELETE: delete the game from the server */
-    deleteGame(id: number): Observable<Game> {
-        const url = `${this.gamesUrl}/${id}`;
-
-        return this.http.delete<Game>(url, this.httpOptions).pipe(
-            tap((_) => this.log(`deleted game id=${id}`)),
-            catchError(this.handleError<Game>('deleteGame'))
-        );
-    }
-
-    /** PUT: update the game on the server */
-    updateGame(game: Game): Observable<any> {
-        return this.http.put(this.gamesUrl, game, this.httpOptions).pipe(
-            tap((_) => this.log(`updated game id=${game.id}`)),
-            catchError(this.handleError<any>('updateGame'))
-        );
-    }
-
     /**
      * Handle Http operation that failed.
      * Let the app continue.

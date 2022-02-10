@@ -1,27 +1,28 @@
+
 export interface Team {
     name: string;
-    sex: 'men' | 'women';
+    gender: 'Men' | 'Women';
 }
 
-export const TEAMS = [
-    { name: 'Great Britain', sex: 'men' },
-    { name: 'Canada', sex: 'men' },
-    { name: 'Sweden', sex: 'men' },
-    { name: 'Switzerland', sex: 'men' },
-    { name: 'United States', sex: 'men' },
-    { name: 'Italy', sex: 'men' },
-    { name: 'Norway', sex: 'men' },
-    { name: 'China', sex: 'men' },
-    { name: 'Denmark', sex: 'men' },
-    { name: 'ROC', sex: 'men' },
-    { name: 'Canada', sex: 'women' },
-    { name: 'Sweden', sex: 'women' },
-    { name: 'Great Britain', sex: 'women' },
-    { name: 'Switzerland', sex: 'women' },
-    { name: 'Japan', sex: 'women' },
-    { name: 'Korea', sex: 'women' },
-    { name: 'United States', sex: 'women' },
-    { name: 'ROC', sex: 'women' },
-    { name: 'China', sex: 'women' },
-    { name: 'Denmark', sex: 'women' },
+export const TEAMS: Team[] = [
+    { name: 'Great Britain', gender: 'Men' },
+    { name: 'Canada', gender: 'Men' },
+    { name: 'Sweden', gender: 'Men' },
+    { name: 'Switzerland', gender: 'Men' },
+    { name: 'United States', gender: 'Men' },
+    { name: 'Italy', gender: 'Men' },
+    { name: 'Norway', gender: 'Men' },
+    { name: 'China', gender: 'Men' },
+    { name: 'Denmark', gender: 'Men' },
+    { name: 'ROC', gender: 'Men' },
+    { name: 'Canada', gender: 'Women' },
+    { name: 'Sweden', gender: 'Women' },
+    { name: 'Great Britain', gender: 'Women' },
+    { name: 'Switzerland', gender: 'Women' },
+    { name: 'Japan', gender: 'Women' },
+    { name: 'South Korea', gender: 'Women' },
+    { name: 'United States', gender: 'Women' },
+    { name: 'ROC', gender: 'Women' },
+    { name: 'China', gender: 'Women' },
+    { name: 'Denmark', gender: 'Women' },
 ];

@@ -1,7 +1,79 @@
+<button type="button" (click)="toggleScores()">Show Scores</button>
+<ul class="games">
+    <div *ngIf="showScores">
+        <li *ngFor="let ps of playerScores">
+            {{ ps[0] + ": " + ps[1] }}
+        </li>
+    </div>
+    <div *ngIf="!showScores">Click "Show Scores" to show rankings</div>
+</ul>
+
 <ul class="games">
     <li *ngFor="let game of games">
-        <a href='{{ game.url }}' target="_blank" rel="noopener noreferrer">
-            <span class="badge">{{ game.id }}</span> {{ game.name }}
-        </a>
+        <!-- <a href='{{ game.url }}' target="_blank" rel="noopener noreferrer">
+            <span class="badge">{{ game.id }}</span> {{ game.teams[0].name }}
+        </a> -->
+        <div class="wrapper">
+            <div class="box t1">
+                {{ game.teams[0].gender + "'s " + game.teams[0].name }}
+            </div>
+            <div class="box t1s">
+                {{
+                    game.scores[0] === null
+                        ? "-"
+                        : showScores
+                        ? game.scores[0]
+                        : "?"
+                }}
+            </div>
+            <div class="box t2">
+                {{ game.teams[1].gender + "'s " + game.teams[1].name }}
+            </div>
+            <div class="box t2s">
+                {{
+                    game.scores[1] === null
+                        ? "-"
+                        : showScores
+                        ? game.scores[1]
+                        : "?"
+                }}
+            </div>
+            <div class="box p1">{{ game.players[0].name }}</div>
+            <div class="box p1s">
+                {{
+                    showScores
+                        ? game.playerScores[0] === null ||
+                          game.playerScores[0] === 0
+                            ? "-"
+                            : "+1"
+                        : game.playerScores[0] === null
+                        ? "-"
+                        : "?"
+                }}
+            </div>
+            <div class="box p2">{{ game.players[1].name }}</div>
+            <div class="box p2s">
+                {{
+                    showScores
+                        ? game.playerScores[1] === null ||
+                          game.playerScores[1] === 0
+                            ? "-"
+                            : "+1"
+                        : game.playerScores[1] === null
+                        ? "-"
+                        : "?"
+                }}
+            </div>
+            <div class="box link">
+                <a
+                    *ngIf="game.inProgress || game.finished"
+                    href="{{ game.url }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >REPLAY</a
+                >
+            </div>
+            <div class="box status">{{ game.statusStr }}</div>
+        </div>
     </li>
 </ul>

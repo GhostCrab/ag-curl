@@ -9,24 +9,22 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { GameDetailComponent } from './game-detail/game-detail.component';
 import { GamesComponent } from './games/games.component';
-import { GameSearchComponent } from './game-search/game-search.component';
 import { MessagesComponent } from './messages/messages.component';
+import { TeamsComponent } from './teams/teams.component';
+import { PlayersComponent } from './players/players.component';
 
 @NgModule({
-    imports: [
-        BrowserModule,
-        FormsModule,
-        AppRoutingModule,
-        HttpClientModule,
-    ],
+    imports: [BrowserModule, FormsModule, AppRoutingModule, HttpClientModule],
     declarations: [
         AppComponent,
         DashboardComponent,
         GamesComponent,
         GameDetailComponent,
         MessagesComponent,
-        GameSearchComponent,
+        TeamsComponent,
+        PlayersComponent,
     ],
+    providers: [TeamsComponent, PlayersComponent],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -32,11 +32,4 @@ export class GameDetailComponent implements OnInit {
   goBack(): void {
     this.location.back();
   }
-
-  save(): void {
-    if (this.game) {
-      this.gameService.updateGame(this.game)
-        .subscribe(() => this.goBack());
-    }
-  }
 }

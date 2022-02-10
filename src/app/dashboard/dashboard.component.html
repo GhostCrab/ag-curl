@@ -2,8 +2,6 @@
 <div class="games-menu">
   <a *ngFor="let game of games"
       routerLink="/detail/{{game.id}}">
-      {{game.name}}
+      {{game.id}}
   </a>
 </div>
-
-<app-game-search></app-game-search>
