@@ -16,10 +16,10 @@ export class GamesComponent implements OnInit {
     games: Game[] = [];
     showScores: boolean = false;
     playerScores = [
-        ['TJ', 0],
-        ['Andrew', 0],
-        ['Cooper', 0],
-        ['Ryan', 0],
+        ['TJ', 0, 0],
+        ['Andrew', 0, 0],
+        ['Cooper', 0, 0],
+        ['Ryan', 0, 0],
     ];
 
     constructor(
@@ -96,21 +96,35 @@ export class GamesComponent implements OnInit {
                             p1Score = 1;
                             p2Score = 0;
 
-                            let ps = this.playerScores.find(
+                            let ps1 = this.playerScores.find(
                                 (x) => x[0] === player1.name
                             );
-                            if (ps) {
-                                ps[1] = Number(ps[1]) + 1;
+                            let ps2 = this.playerScores.find(
+                                (x) => x[0] === player2.name
+                            );
+                            if (ps1) {
+                                ps1[1] = Number(ps1[1]) + 1;
+                                ps1[2] = Number(ps1[2]) + 1;
+                            }
+                            if (ps2) {
+                                ps2[2] = Number(ps2[2]) + 1;
                             }
                         } else {
                             p1Score = 0;
                             p2Score = 1;
 
-                            let ps = this.playerScores.find(
+                            let ps1 = this.playerScores.find(
+                                (x) => x[0] === player1.name
+                            );
+                            let ps2 = this.playerScores.find(
                                 (x) => x[0] === player2.name
                             );
-                            if (ps) {
-                                ps[1] = Number(ps[1]) + 1;
+                            if (ps1) {
+                                ps1[2] = Number(ps1[2]) + 1;
+                            }
+                            if (ps2) {
+                                ps2[1] = Number(ps2[1]) + 1;
+								ps2[2] = Number(ps2[2]) + 1;
                             }
                         }
                     }
@@ -143,7 +157,7 @@ export class GamesComponent implements OnInit {
         }
 
         this.playerScores = this.playerScores.sort(
-            (a, b) => Number(b[1]) - Number(a[1])
+            (a, b) => (b[1] === a[1]) ? Number(a[2]) - Number(b[2]) : Number(b[1]) - Number(a[1])
         );
     }
 

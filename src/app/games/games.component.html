@@ -2,7 +2,7 @@
 <ul class="games">
     <div *ngIf="showScores">
         <li *ngFor="let ps of playerScores">
-            {{ ps[0] + ": " + ps[1] }}
+            {{ ps[0] + ": " + ps[1] + "/" + ps[2] }}
         </li>
     </div>
     <div *ngIf="!showScores">Click "Show Scores" to show rankings</div>
