@@ -1,7 +1,7 @@
 <button type="button" (click)="toggleScores()">Show Scores</button>
 <ul class="games">
     <div *ngIf="showScores">
-        <li *ngFor="let ps of playerScores">
+        <li *ngFor="let ps of playerScores" class="top-score">
             {{ ps[0] + ": " + ps[1] + "/" + ps[2] }}
         </li>
     </div>
@@ -14,10 +14,10 @@
             <span class="badge">{{ game.id }}</span> {{ game.teams[0].name }}
         </a> -->
         <div class="wrapper">
-            <div class="box t1">
-                {{ game.teams[0].gender + "'s " + game.teams[0].name }}
+            <div class="box t1 {{ showScores ? game.winClasses[0] : ''}}">
+                {{ game.teams[0].gender + "'s " + game.teams[0].name + " (+" + game.teams[0].odds + ")" }}
             </div>
-            <div class="box t1s">
+            <div class="box t1s {{ showScores ? game.winClasses[0] : ''}}">
                 {{
                     game.scores[0] === null
                         ? "-"
@@ -26,10 +26,10 @@
                         : "?"
                 }}
             </div>
-            <div class="box t2">
-                {{ game.teams[1].gender + "'s " + game.teams[1].name }}
+            <div class="box t2 {{ showScores ? game.winClasses[1] : ''}}">
+                {{ game.teams[1].gender + "'s " + game.teams[1].name + " (+" + game.teams[1].odds + ")" }}
             </div>
-            <div class="box t2s">
+            <div class="box t2s {{ showScores ? game.winClasses[1] : ''}}">
                 {{
                     game.scores[1] === null
                         ? "-"
@@ -38,8 +38,8 @@
                         : "?"
                 }}
             </div>
-            <div class="box p1">{{ game.players[0].name }}</div>
-            <div class="box p1s">
+            <div class="box p1 {{ showScores ? game.winClasses[0] : ''}}">{{ game.players[0].name }}</div>
+            <div class="box p1s {{ showScores ? game.winClasses[0] : ''}}">
                 {{
                     showScores
                         ? game.playerScores[0] === null ||
@@ -51,8 +51,8 @@
                         : "?"
                 }}
             </div>
-            <div class="box p2">{{ game.players[1].name }}</div>
-            <div class="box p2s">
+            <div class="box p2 {{ showScores ? game.winClasses[1] : ''}}">{{ game.players[1].name }}</div>
+            <div class="box p2s {{ showScores ? game.winClasses[1] : ''}}">
                 {{
                     showScores
                         ? game.playerScores[1] === null ||

@@ -7,6 +7,7 @@ export interface Game {
     players: Player[];
     scores: (number | null)[];
 	playerScores: (number | null)[];
+    winClasses: string[];
     inProgress: boolean;
     finished: boolean;
 	startTime: number;

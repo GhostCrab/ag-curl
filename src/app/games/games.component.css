@@ -65,10 +65,10 @@
 .wrapper {
     display: grid;
     padding: .5em 0;
+    color: white;
 }
 
 .box {
-    color: white;
     padding: .2em;
     background-color: #405061;
 	text-align: center;
@@ -122,6 +122,14 @@
 .status {
     grid-column: 6 / 11;
     grid-row: 3;
+}
+.win {
+    color: rgb(95, 255, 95)
+}
+.top-score {
+    font-weight:bold;
+    font-size:larger;
+    padding: .2em .0em;
 }
 
 /* 

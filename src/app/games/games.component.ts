@@ -91,10 +91,15 @@ export class GamesComponent implements OnInit {
                     let p1Score = null;
                     let p2Score = null;
 
+                    let p1Class = '';
+                    let p2Class = '';
+
                     if (c1Score !== null && c2Score !== null && finished) {
                         if (c1Score > c2Score) {
                             p1Score = 1;
                             p2Score = 0;
+
+                            p1Class = 'win';
 
                             let ps1 = this.playerScores.find(
                                 (x) => x[0] === player1.name
@@ -113,6 +118,8 @@ export class GamesComponent implements OnInit {
                             p1Score = 0;
                             p2Score = 1;
 
+                            p2Class = 'win';
+
                             let ps1 = this.playerScores.find(
                                 (x) => x[0] === player1.name
                             );
@@ -124,7 +131,7 @@ export class GamesComponent implements OnInit {
                             }
                             if (ps2) {
                                 ps2[1] = Number(ps2[1]) + 1;
-								ps2[2] = Number(ps2[2]) + 1;
+                                ps2[2] = Number(ps2[2]) + 1;
                             }
                         }
                     }
@@ -141,6 +148,7 @@ export class GamesComponent implements OnInit {
                         players: [player1, player2],
                         scores: [c1Score, c2Score],
                         playerScores: [p1Score, p2Score],
+                        winClasses: [p1Class, p2Class],
                         inProgress: inProgress,
                         finished: finished,
                         startTime: startTime,
@@ -156,8 +164,16 @@ export class GamesComponent implements OnInit {
             }
         }
 
-        this.playerScores = this.playerScores.sort(
-            (a, b) => (b[1] === a[1]) ? Number(a[2]) - Number(b[2]) : Number(b[1]) - Number(a[1])
+        this.playerScores = this.playerScores.sort((a, b) =>
+            b[1] === a[1]
+                ? Number(a[2]) - Number(b[2])
+                : Number(b[1]) - Number(a[1])
+        );
+
+        this.games = this.games.sort((a, b) =>
+            a.startTime === b.startTime
+                ? a.id - b.id
+                : a.startTime - b.startTime
         );
     }
 

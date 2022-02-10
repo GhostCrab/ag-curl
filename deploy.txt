@@ -1,1 +1,1 @@
-ng build --base-href "https://GhostCrab.github.io/ag-curl/";npx angular-cli-ghpages --dir=dist/ag-curl
+ng build --base-href "https://GhostCrab.github.io/ag-curl/";npx angular-cli-ghpages --dir=dist/ag-curl;
