@@ -45,7 +45,7 @@
                         ? game.playerScores[0] === null ||
                           game.playerScores[0] === 0
                             ? "-"
-                            : "+1"
+                            : "+" + game.playerScores[0].toString()
                         : game.playerScores[0] === null
                         ? "-"
                         : "?"
@@ -58,7 +58,7 @@
                         ? game.playerScores[1] === null ||
                           game.playerScores[1] === 0
                             ? "-"
-                            : "+1"
+                            : "+" + game.playerScores[1].toString()
                         : game.playerScores[1] === null
                         ? "-"
                         : "?"

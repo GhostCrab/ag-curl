@@ -46,6 +46,8 @@ export class GamesComponent implements OnInit {
                 const url: undefined | string = match?.c_ClientStreamURL;
                 const finished: undefined | boolean = match?.b_Finished;
                 const inProgress: undefined | boolean = match?.b_InProgress;
+                const isKnockout: undefined | boolean = match?.b_KnockoutPhase;
+                const phase: undefined | string = match?.c_Phase;
                 const c1Score: undefined | number | null =
                     match?.Match?.Competitor1?.n_Result;
                 const c2Score: undefined | number | null =
@@ -107,12 +109,37 @@ export class GamesComponent implements OnInit {
                             let ps2 = this.playerScores.find(
                                 (x) => x[0] === player2.name
                             );
-                            if (ps1) {
-                                ps1[1] = Number(ps1[1]) + 1;
-                                ps1[2] = Number(ps1[2]) + 1;
-                            }
-                            if (ps2) {
-                                ps2[2] = Number(ps2[2]) + 1;
+                            if (isKnockout) {
+                                p1Score = 0;
+                                p2Score = 0;
+                                if (phase === "Bronze Medal Game") {
+                                    p1Score = 2;
+                                    p2Score = 1;
+                                    if (ps1) {
+                                        ps1[1] = Number(ps1[1]) + 2;
+                                    }
+                                    if (ps2) {
+                                        ps2[1] = Number(ps2[1]) + 1;
+                                    }
+                                }
+                                if (phase === "Gold Medal Game") {
+                                    p1Score = 6;
+                                    p2Score = 4;
+                                    if (ps1) {
+                                        ps1[1] = Number(ps1[1]) + 6;
+                                    }
+                                    if (ps2) {
+                                        ps2[1] = Number(ps2[1]) + 4;
+                                    }
+                                }
+                            } else {
+                                if (ps1) {
+                                    ps1[1] = Number(ps1[1]) + 1;
+                                    ps1[2] = Number(ps1[2]) + 1;
+                                }
+                                if (ps2) {
+                                    ps2[2] = Number(ps2[2]) + 1;
+                                }
                             }
                         } else {
                             p1Score = 0;
@@ -126,12 +153,37 @@ export class GamesComponent implements OnInit {
                             let ps2 = this.playerScores.find(
                                 (x) => x[0] === player2.name
                             );
-                            if (ps1) {
-                                ps1[2] = Number(ps1[2]) + 1;
-                            }
-                            if (ps2) {
-                                ps2[1] = Number(ps2[1]) + 1;
-                                ps2[2] = Number(ps2[2]) + 1;
+                            if (isKnockout) {
+                                p1Score = 0;
+                                p2Score = 0;
+                                if (phase === "Bronze Medal Game") {
+                                    p1Score = 1;
+                                    p2Score = 2;
+                                    if (ps1) {
+                                        ps1[1] = Number(ps1[1]) + 1;
+                                    }
+                                    if (ps2) {
+                                        ps2[1] = Number(ps2[1]) + 2;
+                                    }
+                                }
+                                if (phase === "Gold Medal Game") {
+                                    p1Score = 4;
+                                    p2Score = 6;
+                                    if (ps1) {
+                                        ps1[1] = Number(ps1[1]) + 4;
+                                    }
+                                    if (ps2) {
+                                        ps2[1] = Number(ps2[1]) + 6;
+                                    }
+                                }
+                            } else {
+                                if (ps1) {
+                                    ps1[2] = Number(ps1[2]) + 1;
+                                }
+                                if (ps2) {
+                                    ps2[1] = Number(ps2[1]) + 1;
+                                    ps2[2] = Number(ps2[2]) + 1;
+                                }
                             }
                         }
                     }
