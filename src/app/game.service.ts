@@ -8,10 +8,10 @@ import { Game } from './game';
 import { MessageService } from './message.service';
 
 // 'https://api-gracenote.nbcolympics.com/svc/games_v2.svc/json/GetScheduleSport?competitionSetId=2&season=20212022&sportId=212&languageCode=2'; // URL to web api
-
+// 'https://api.fifa.com/api/v3/calendar/matches?language=en&count=500&idSeason=255711'
 @Injectable({ providedIn: 'root' })
 export class GameService {
-    private gamesUrl = 'https://api-gracenote.nbcolympics.com/svc/games_v2.svc/json/GetScheduleSport?competitionSetId=2&season=20212022&sportId=212&languageCode=2'; // URL to web api
+    private gamesUrl = 'https://api.fifa.com/api/v3/calendar/matches?language=en&count=500&idSeason=255711'
 
     httpOptions = {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),

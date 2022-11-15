@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
     styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-    title = 'Winter Olympics 2022 Curling Pool';
+    title = 'World Cup 2022 Draft Club';
 }

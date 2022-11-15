@@ -15,12 +15,32 @@ export class TeamsComponent implements OnInit {
         return TEAMS;
     }
 
-    getTeam(gender: string, name: string): Team {
+    getTeam(name: string): Team {
+        if (name === "IR Iran") {
+            let team = this.getTeams().find(
+                (x) => x.name === "Iran"
+            );
+
+            if (!team) throw `unable to find team ${name}`
+
+            return team
+        } 
+
+        if (name === "Korea Republic") {
+            let team = this.getTeams().find(
+                (x) => x.name === "Iran"
+            );
+
+            if (!team) throw `unable to find team ${name}`
+
+            return team
+        } 
+
 		let team = this.getTeams().find(
-            (x) => x.gender === gender && x.name === name
+            (x) => x.name === name
         );
 
-		if (!team) throw `unable to find team ${gender}-${name}`
+		if (!team) throw `unable to find team ${name}`
 
 		return team;
     }
