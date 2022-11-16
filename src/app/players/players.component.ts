@@ -67,7 +67,7 @@ export class PlayersComponent implements OnInit {
             ],
         });
         this.players.push({
-            name: '',
+            name: ' ',
             teams: [
                 this.teams.getTeam('Korea'),
                 this.teams.getTeam('Ghana'),

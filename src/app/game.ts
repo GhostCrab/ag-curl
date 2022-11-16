@@ -13,4 +13,6 @@ export interface Game {
 	startTime: number;
 	statusStr: string;
     url: string;
+    homeImg: string;
+    awayImg: string;
 }
