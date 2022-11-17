@@ -16,8 +16,8 @@ export class PlayersComponent implements OnInit {
             name: 'Andrew',
             teams: [
                 this.teams.getTeam('France'),
-                this.teams.getTeam('Croatia'),
-                this.teams.getTeam('Serbia'),
+                this.teams.getTeam('USA'),
+                this.teams.getTeam('Wales'),
                 this.teams.getTeam('Japan'),
             ],
         });
@@ -25,9 +25,9 @@ export class PlayersComponent implements OnInit {
             name: 'Cooper',
             teams: [
                 this.teams.getTeam('England'),
+                this.teams.getTeam('Senegal'),
                 this.teams.getTeam('Uruguay'),
-                this.teams.getTeam('USA'),
-                this.teams.getTeam('Qatar'),
+                this.teams.getTeam('Korea'),
             ],
         });
         this.players.push({
@@ -35,17 +35,18 @@ export class PlayersComponent implements OnInit {
             teams: [
                 this.teams.getTeam('Brazil'),
                 this.teams.getTeam('Denmark'),
-                this.teams.getTeam('Mexico'),
-                this.teams.getTeam('Morocco'),
+                this.teams.getTeam('Croatia'),
+                this.teams.getTeam('Ecuador'),
             ],
         });
         this.players.push({
             name: 'TJ',
             teams: [
                 this.teams.getTeam('Argentina'),
-                this.teams.getTeam('Germany'),
-                this.teams.getTeam('Senegal'),
-                this.teams.getTeam('Ecuador'),
+                this.teams.getTeam('Portugal'),
+                this.teams.getTeam('Mexico'),
+                this.teams.getTeam('Canada'),
+
             ],
         });
         this.players.push({
@@ -53,27 +54,28 @@ export class PlayersComponent implements OnInit {
             teams: [
                 this.teams.getTeam('Spain'),
                 this.teams.getTeam('Belgium'),
+                this.teams.getTeam('Switzerland'),
                 this.teams.getTeam('Poland'),
-                this.teams.getTeam('Canada'),
+
             ],
         });
         this.players.push({
             name: 'Bardia',
             teams: [
                 this.teams.getTeam('Netherlands'),
-                this.teams.getTeam('Portugal'),
-                this.teams.getTeam('Switzerland'),
-                this.teams.getTeam('Wales'),
+                this.teams.getTeam('Germany'),
+                this.teams.getTeam('Iran'),
+                this.teams.getTeam('Ghana'),
             ],
         });
         this.players.push({
             name: ' ',
             teams: [
-                this.teams.getTeam('Korea'),
-                this.teams.getTeam('Ghana'),
+                this.teams.getTeam('Morocco'),
+                this.teams.getTeam('Qatar'),
+                this.teams.getTeam('Serbia'),
                 this.teams.getTeam('Australia'),
                 this.teams.getTeam('Cameroon'),
-                this.teams.getTeam('Iran'),
                 this.teams.getTeam('Tunisia'),
                 this.teams.getTeam('Saudi Arabia'),
                 this.teams.getTeam('Costa Rica'),

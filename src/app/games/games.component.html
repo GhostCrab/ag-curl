@@ -15,7 +15,7 @@
         </a> -->
         <div class="wrapper">
             <div class="box t1 {{ showScores ? game.winClasses[0] : ''}}">
-                {{ "[" + game.teams[0].rank + "] " + game.teams[0].name }}
+                {{ game.teams[0].rank + ". " + game.teams[0].name }}
             </div>
             <div class="box t1s {{ showScores ? game.winClasses[0] : ''}}">
                 {{
@@ -27,7 +27,7 @@
                 }}
             </div>
             <div class="box t2 {{ showScores ? game.winClasses[1] : ''}}">
-                {{ "[" + game.teams[1].rank + "] " + game.teams[1].name }}
+                {{ game.teams[1].rank + ". " + game.teams[1].name }}
             </div>
             <div class="box t2s {{ showScores ? game.winClasses[1] : ''}}">
                 {{

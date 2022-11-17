@@ -54,10 +54,10 @@ export class GamesComponent implements OnInit {
             let isKnockout: undefined | boolean = match?.b_KnockoutPhase;
             const phase: undefined | string = match?.c_Phase;
 
-            c1Score = Math.floor(Math.random() * 4);
-            c2Score = Math.floor(Math.random() * 4);
+            // c1Score = Math.floor(Math.random() * 4);
+            // c2Score = Math.floor(Math.random() * 4);
 
-            finished = true;
+            finished = false;
             inProgress = false;
             isKnockout = false;
 
