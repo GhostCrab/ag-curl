@@ -5,7 +5,6 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { Game } from './game';
-import { MessageService } from './message.service';
 
 // 'https://api-gracenote.nbcolympics.com/svc/games_v2.svc/json/GetScheduleSport?competitionSetId=2&season=20212022&sportId=212&languageCode=2'; // URL to web api
 // 'https://api.fifa.com/api/v3/calendar/matches?language=en&count=500&idSeason=255711'
@@ -19,13 +18,12 @@ export class GameService {
 
     constructor(
         private http: HttpClient,
-        private messageService: MessageService
     ) {}
 
     /** GET games from the server */
     getGames(): Observable<Game[]> {
         return this.http.get<Game[]>(this.gamesUrl).pipe(
-            tap((_) => this.log('fetched games')),
+            tap((_) => console.log('fetched games')),
             catchError(this.handleError<Game[]>('getGames', []))
         );
     }
@@ -37,7 +35,7 @@ export class GameService {
             map((games) => games[0]), // returns a {0|1} element array
             tap((h) => {
                 const outcome = h ? 'fetched' : 'did not find';
-                this.log(`${outcome} game id=${id}`);
+                console.log(`${outcome} game id=${id}`);
             }),
             catchError(this.handleError<Game>(`getGame id=${id}`))
         );
@@ -47,7 +45,7 @@ export class GameService {
     getGame(id: number): Observable<Game> {
         const url = `${this.gamesUrl}/${id}`;
         return this.http.get<Game>(url).pipe(
-            tap((_) => this.log(`fetched game id=${id}`)),
+            tap((_) => console.log(`fetched game id=${id}`)),
             catchError(this.handleError<Game>(`getGame id=${id}`))
         );
     }
@@ -65,15 +63,10 @@ export class GameService {
             console.error(error); // log to console instead
 
             // TODO: better job of transforming error for user consumption
-            this.log(`${operation} failed: ${error.message}`);
+            console.log(`${operation} failed: ${error.message}`);
 
             // Let the app keep running by returning an empty result.
             return of(result as T);
         };
-    }
-
-    /** Log a GameService message with the MessageService */
-    private log(message: string) {
-        this.messageService.add(`GameService: ${message}`);
     }
 }

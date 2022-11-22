@@ -1,21 +1,51 @@
-/* AppComponent's private CSS styles */
-h1 {
-    margin-bottom: 0;
-}
-nav a {
-    padding: 1rem;
-    text-decoration: none;
-    margin-top: 10px;
-    display: inline-block;
-    background-color: #e8e8e8;
-    color: #3d3d3d;
-    border-radius: 4px;
+:host {
+    position: relative;
+    display: block;
+    left: 0;
+    transition: left 0.3s ease;
 }
 
-nav a:hover {
-    color: white;
-    background-color: #42545c;
+:host.drawer-open {
+    left: 70%;
 }
-nav a.active {
-    background-color: black;
+
+.nav-bar {
+    position: fixed;
+    display: block;
+    top: 0;
+    width: 100vw;
+    z-index: 100;
+}
+
+.navbar-padding {
+    display: block;
+    position: relative;
+    margin-top: 3.5rem;
+}
+
+.main-section {
+    min-height: 125vh;
+}
+
+.app-content {
+    /* padding-top: 64px; */
+    margin: 10px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.title {
+    padding: 10px 0;
+    letter-spacing: 0.075em;
+    color: rgb(153, 180, 255);
+    font-weight: bold;
+    font-size: 2em;
+}
+
+@media (max-width: 768px) {
+    .app-content {
+        /* padding-top: 64px; */
+        width: 95%;
+        margin: 0 auto;
+    }
 }

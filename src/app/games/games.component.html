@@ -1,4 +1,4 @@
-<button type="button" (click)="toggleScores()">Show Scores</button>
+<!-- <button type="button" (click)="toggleScores()">Show Scores</button> -->
 <ul class="games">
     <div *ngIf="showScores">
         <li *ngFor="let ps of playerScores" class="top-score">
@@ -63,15 +63,6 @@
                         ? "-"
                         : "?"
                 }}
-            </div>
-            <div class="box link">
-                <!-- <a
-                    *ngIf="game.inProgress || game.finished"
-                    href="{{ game.url }}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >REPLAY</a
-                > -->
             </div>
             <div class="box status">{{ game.statusStr }}</div>
         </div>

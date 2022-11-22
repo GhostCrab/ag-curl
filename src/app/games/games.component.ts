@@ -7,6 +7,8 @@ import { GameService } from '../game.service';
 import { PlayersComponent } from '../players/players.component';
 import { TeamsComponent } from '../teams/teams.component';
 
+import { ApplicationStateService } from 'src/app/core/services/application-state.service';
+
 @Component({
     selector: 'app-games',
     templateUrl: './games.component.html',
@@ -14,7 +16,7 @@ import { TeamsComponent } from '../teams/teams.component';
 })
 export class GamesComponent implements OnInit {
     games: Game[] = [];
-    showScores: boolean = false;
+    showScores: boolean = true;
     playerScores = [
         ['TJ', 0, 0],
         ['Andrew', 0, 0],
@@ -24,11 +26,16 @@ export class GamesComponent implements OnInit {
         ['Micah', 0, 0],
     ];
 
+    isMobile: boolean;
+
     constructor(
         private gameService: GameService,
         private teams: TeamsComponent,
-        private players: PlayersComponent
-    ) {}
+        private players: PlayersComponent,
+        private readonly appState: ApplicationStateService,
+    ) {
+        this.isMobile = appState.getIsMobileResolution();
+    }
 
     ngOnInit(): void {
         this.getGames();
@@ -47,18 +54,16 @@ export class GamesComponent implements OnInit {
                 match?.AwayTeamPenaltyScore;
             let c1Img: undefined | string = match?.Home?.PictureUrl;
             let c2Img: undefined | string = match?.Away?.PictureUrl;
-            const startTime = new Date(match?.LocalDate).getTime();
+            const startTime = new Date(match?.LocalDate).getTime() - 10800000;
 
-            let finished: undefined | boolean = match?.b_Finished;
-            let inProgress: undefined | boolean = match?.b_InProgress;
+            let finished: undefined | boolean = match?.MatchStatus === 0;
+            let inProgress: undefined | boolean = match?.MatchStatus > 1;
             let isKnockout: undefined | boolean = match?.b_KnockoutPhase;
             const phase: undefined | string = match?.c_Phase;
 
             // c1Score = Math.floor(Math.random() * 4);
             // c2Score = Math.floor(Math.random() * 4);
 
-            finished = false;
-            inProgress = false;
             isKnockout = false;
 
             if (
@@ -101,8 +106,31 @@ export class GamesComponent implements OnInit {
                 let p2Class = '';
 
                 if (c1Score !== null && c2Score !== null && finished) {
-                    if (c1Score > c2Score) {
+                    if (c1Score === c2Score) {
                         p1Score = 1;
+                        p2Score = 1;
+
+                        p1Class = 'tie';
+                        p2Class = 'tie';
+
+                        let ps1 = this.playerScores.find(
+                            (x) => x[0] === player1.name
+                        );
+                        let ps2 = this.playerScores.find(
+                            (x) => x[0] === player2.name
+                        );
+
+                        if (ps1) {
+                            ps1[1] = Number(ps1[1]) + 1;
+                            ps1[2] = Number(ps1[2]) + 1;
+                        }
+                        if (ps2) {
+                            ps2[1] = Number(ps2[1]) + 1;
+                            ps2[2] = Number(ps2[2]) + 1;
+                        }
+                    }
+                    else if (c1Score > c2Score) {
+                        p1Score = 3;
                         p2Score = 0;
 
                         p1Class = 'win';
@@ -138,7 +166,7 @@ export class GamesComponent implements OnInit {
                             }
                         } else {
                             if (ps1) {
-                                ps1[1] = Number(ps1[1]) + 1;
+                                ps1[1] = Number(ps1[1]) + 3;
                                 ps1[2] = Number(ps1[2]) + 1;
                             }
                             if (ps2) {
@@ -147,7 +175,7 @@ export class GamesComponent implements OnInit {
                         }
                     } else {
                         p1Score = 0;
-                        p2Score = 1;
+                        p2Score = 3;
 
                         p2Class = 'win';
 
@@ -185,7 +213,7 @@ export class GamesComponent implements OnInit {
                                 ps1[2] = Number(ps1[2]) + 1;
                             }
                             if (ps2) {
-                                ps2[1] = Number(ps2[1]) + 1;
+                                ps2[1] = Number(ps2[1]) + 3;
                                 ps2[2] = Number(ps2[2]) + 1;
                             }
                         }

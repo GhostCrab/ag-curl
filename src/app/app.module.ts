@@ -6,25 +6,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { GameDetailComponent } from './game-detail/game-detail.component';
 import { GamesComponent } from './games/games.component';
-import { MessagesComponent } from './messages/messages.component';
-import { TeamsComponent } from './teams/teams.component';
-import { PlayersComponent } from './players/players.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
-    imports: [BrowserModule, FormsModule, AppRoutingModule, HttpClientModule],
+    imports: [BrowserModule, FormsModule, AppRoutingModule, HttpClientModule, BrowserAnimationsModule],
     declarations: [
         AppComponent,
-        DashboardComponent,
         GamesComponent,
-        GameDetailComponent,
-        MessagesComponent,
-        TeamsComponent,
-        PlayersComponent,
     ],
-    providers: [TeamsComponent, PlayersComponent],
+    providers: [],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
