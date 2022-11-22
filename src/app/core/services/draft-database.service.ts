@@ -30,4 +30,12 @@ export class DraftDatabaseService {
 
         return this.userdb.none;
     }
+
+    public getDraftByUser(name: string): IDraft {
+        for (const draft of this.drafts) {
+            if (draft.user.name === name) return draft;
+        }
+
+        throw new Error('Unable to find draft for user named ' + name);
+    }
 }

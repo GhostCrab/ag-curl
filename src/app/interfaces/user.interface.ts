@@ -3,6 +3,7 @@ export interface IUser {
 
     abbr(): string;
     full(): string;
+    isNone(): boolean;
 }
 
 export class User implements IUser {
@@ -22,5 +23,9 @@ export class User implements IUser {
         if (this.name.length > 0) return `- ${this.name}`;
 
         return '';
+    }
+
+    public isNone(): boolean {
+        return this.name === '';
     }
 }

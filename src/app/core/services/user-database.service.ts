@@ -18,11 +18,15 @@ export class UserDatabaseService {
 
     constructor() {}
 
-    get(s: string): IUser {
+    public get(s: string): IUser {
         for (const user of this.users) {
             if (user.name === s) return user;
         }
 
         throw new Error('Unable to find user with name ' + s);
+    }
+
+    public all(): IUser[] {
+        return this.users;
     }
 }
