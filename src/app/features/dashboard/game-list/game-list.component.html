@@ -1,1 +1,97 @@
-<p>game-list works!</p>
+<div *ngIf="!isMobile; else mobile">
+    <div class="list-container">
+        <mat-grid-list
+            cols="18"
+            rowHeight="3em"
+            *ngFor="let game of games$ | async"
+        >
+            <mat-grid-tile
+                colspan="5"
+                [ngClass]="
+                    game.complete
+                        ? game.tie()
+                            ? 'tie'
+                            : game.winner().abbr === game.away.abbr
+                            ? 'win'
+                            : 'lose'
+                        : 'no-contest'
+                "
+            >
+                <div class="team-name">
+                    <img class="team-img" src="{{ game.awayImg }}" />
+                    {{ game.away.rank }}. {{ game.away.name }} {{ game.awayUser.full() }}
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile
+                colspan="5"
+                [ngClass]="
+                    game.complete
+                        ? game.tie()
+                            ? 'tie'
+                            : game.winner().abbr === game.home.abbr
+                            ? 'win'
+                            : 'lose'
+                        : 'no-contest'
+                "
+                ><div class="team-name">
+                    <img class="team-img" src="{{ game.homeImg }}" />
+                    {{ game.home.rank }}. {{ game.home.name }} {{ game.homeUser.full() }}
+                </div></mat-grid-tile
+            >
+            <mat-grid-tile colspan="8"
+                ><div class="game-status">
+                    {{ game.status() }}
+                </div></mat-grid-tile
+            >
+        </mat-grid-list>
+    </div>
+</div>
+
+<ng-template #mobile>
+    <div class="list-container">
+        <mat-grid-list
+            cols="18"
+            rowHeight="3em"
+            *ngFor="let game of games$ | async"
+        >
+            <mat-grid-tile
+                colspan="5"
+                [ngClass]="
+                    game.complete
+                        ? game.tie()
+                            ? 'tie'
+                            : game.winner().abbr === game.away.abbr
+                            ? 'win'
+                            : 'lose'
+                        : 'no-contest'
+                "
+            >
+                <div class="team-name">
+                    <img class="team-img-mini" src="{{ game.awayImg }}" />
+                    {{ game.away.abbr }} {{ game.awayUser.abbr() }}
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile
+                colspan="5"
+                [ngClass]="
+                    game.complete
+                        ? game.tie()
+                            ? 'tie'
+                            : game.winner().abbr === game.home.abbr
+                            ? 'win'
+                            : 'lose'
+                        : 'no-contest'
+                "
+                ><div class="team-name">
+                    <img class="team-img-mini" src="{{ game.homeImg }}" />
+                    {{ game.home.abbr }} {{ game.homeUser.abbr() }}
+                </div></mat-grid-tile
+            >
+            <mat-grid-tile colspan="8"
+                ><div class="game-status">
+                    {{ game.status() }}
+                </div></mat-grid-tile
+            >
+        </mat-grid-list>
+    </div>
+</ng-template>

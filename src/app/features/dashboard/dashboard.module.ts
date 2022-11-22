@@ -5,6 +5,7 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard.component';
 import { ScoreListComponent } from './score-list/score-list.component';
 import { GameListComponent } from './game-list/game-list.component';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { GameListComponent } from './game-list/game-list.component';
   ],
   imports: [
     CommonModule,
-    DashboardRoutingModule
+    DashboardRoutingModule,
+    MatGridListModule,
   ]
 })
 export class DashboardModule { }
