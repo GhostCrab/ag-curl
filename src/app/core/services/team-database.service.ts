@@ -61,4 +61,8 @@ export class TeamDatabaseService {
 
         throw new Error('Unable to find team with name ' + fixed);
     }
+
+    public all(): ITeam[] {
+        return this.teams;
+    }
 }

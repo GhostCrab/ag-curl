@@ -45,10 +45,21 @@ export class FIFAApiService {
             map((data) => {
                 const games: IGame[] = [];
                 for (const result of data.Results) {
-                    if (result.Away)
+                    if (result.Away && result.Home)
                         games.push(new Game(result, this.teamdb, this.draftdb));
                 }
-                return games;
+
+                const sortedGames = games.sort((a, b) => a.gt - b.gt);
+
+                // for (const team of this.teamdb.all()) {
+                //     console.log(`${team.name} = Team.from_name("${team.name}")`)
+                // }
+
+                // for (const game of sortedGames) {
+                //     console.log(game.gameStr());
+                // }
+
+                return games.sort((a, b) => a.gt - b.gt);
             })
         );
     }

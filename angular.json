@@ -25,9 +25,7 @@
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": [
                             "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-                            "src/styles.css",
-                            "src/assets/fonts/roboto.css",
-                            "src/assets/fonts/material-icons.css"
+                            "src/styles.css"
                         ],
                         "scripts": []
                     },
@@ -92,9 +90,7 @@
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": [
                             "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-                            "src/styles.css",
-                            "src/assets/fonts/roboto.css",
-                            "src/assets/fonts/material-icons.css"
+                            "src/styles.css"
                         ],
                         "scripts": []
                     }

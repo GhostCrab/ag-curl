@@ -4,6 +4,8 @@ export interface ITeam {
     rank: number;
     group: string;
     odds: number;
+
+    cleanName(): string;
 }
 
 export class Team {
@@ -25,5 +27,11 @@ export class Team {
         this.rank = rank;
         this.group = group;
         this.odds = odds;
+    }
+
+    cleanName(): string {
+        if (this.name === "Costa Rica") return "CostaRica";
+        if (this.name === "Saudi Arabia") return "SaudiArabia";
+        return this.name;
     }
 }

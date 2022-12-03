@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         this.allDrafts$ = from([this.draftdb.drafts])
 
-        const games = await this.updateGames();
+        const games = (await this.updateGames()).sort((a, b) => a.gt - b.gt);
         this.allGamesSub$.next(games);
 
         this.updateInterval = setInterval(async () => {

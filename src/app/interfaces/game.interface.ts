@@ -25,6 +25,7 @@ export interface IGame {
     tie(): boolean;
     winner(): ITeam;
     getScore(abbr: string): number;
+    gameStr(): string;
 }
 
 export class Game implements IGame {
@@ -43,6 +44,7 @@ export class Game implements IGame {
     public homeUser: IUser;
     public awayUser: IUser;
     public knockout: boolean;
+    public round: number;
 
     private matchTime: string;
     private teamdb: TeamDatabaseService;
@@ -85,6 +87,14 @@ export class Game implements IGame {
         this.awayUser = draftdb.getUserByAbbr(result.Away.Abbreviation);
         this.knockout = result.StageName[0].Description !== 'First stage';
         this.matchTime = result.MatchTime === null ? '' : result.MatchTime;
+        this.round = 0;
+        if (this.knockout) {
+            if (result.StageName[0].Description === "Round of 16") this.round = 1;
+            else if (result.StageName[0].Description === "Quarter-final") this.round = 2;
+            else if (result.StageName[0].Description === "Semi-final") this.round = 3;
+            else if (result.StageName[0].Description === "Final") this.round = 4;
+            else this.round = -1; // play-off for 3rd
+        }
 
         this.teamdb = teamdb;
         this.draftdb = draftdb;
@@ -99,23 +109,21 @@ export class Game implements IGame {
                     tmpstr +
                     ` P[${this.awayPenaltyScore} - ${this.homePenaltyScore}]`;
 
-            if (this.tie()) {
-                if (this.homeUser.abbr() === this.awayUser.abbr())
-                    tmpstr = tmpstr + ` ${this.homeUser.name} +2`;
-                else {
-                    if (this.homeUser.isNone() || this.awayUser.isNone()) {
-                        if (this.homeUser.isNone()) tmpstr = tmpstr + ` ${this.awayUser.name} + 1`;
-                        else tmpstr = tmpstr + ` ${this.homeUser.name} + 1`;
-                    } else 
-                        tmpstr = tmpstr + ` ${this.homeUser.name} + 1, ${this.awayUser.name} + 1`;
-                }
+            let homeUserScore = 0;
+            let awayUserScore = 0;
+            if (this.homeUser.abbr() === this.awayUser.abbr()) {
+                homeUserScore = this.getScore(this.home.abbr) + this.getScore(this.away.abbr);
             } else {
-                if (!this.draftdb.getUserByAbbr(this.winner().abbr).isNone()) {
-                    if (this.winner().abbr === this.home.abbr)
-                        tmpstr = tmpstr + ` ${this.homeUser.name} +3`;
-                    else tmpstr = tmpstr + ` ${this.awayUser.name} +3`;
-                }
+                homeUserScore = this.getScore(this.home.abbr);
+                awayUserScore = this.getScore(this.away.abbr);
             }
+
+            if (homeUserScore > 0 && awayUserScore > 0 && !this.homeUser.isNone() && !this.awayUser.isNone())
+                tmpstr = tmpstr + `, ${this.homeUser.name} +${homeUserScore}, ${this.awayUser.name} +${awayUserScore}`;
+            else if (homeUserScore > 0 && !this.homeUser.isNone())
+                tmpstr = tmpstr + `, ${this.homeUser.name} +${homeUserScore}`
+            else if (awayUserScore > 0 && !this.awayUser.isNone())
+                tmpstr = tmpstr + `, ${this.awayUser.name} +${awayUserScore}`
 
             return tmpstr;
         }
@@ -150,23 +158,21 @@ export class Game implements IGame {
         if (this.complete) {
             let tmpstr = '';
 
-            if (this.tie()) {
-                if (this.homeUser.abbr() === this.awayUser.abbr())
-                    tmpstr = tmpstr + `${this.homeUser.name} +2`;
-                else {
-                    if (this.homeUser.isNone() || this.awayUser.isNone()) {
-                        if (this.homeUser.isNone()) tmpstr = tmpstr + `${this.awayUser.name} + 1`;
-                        else tmpstr = tmpstr + `${this.homeUser.name} + 1`;
-                    } else 
-                        tmpstr = tmpstr + `${this.homeUser.name} + 1, ${this.awayUser.name} + 1`;
-                }
+            let homeUserScore = 0;
+            let awayUserScore = 0;
+            if (this.homeUser.abbr() === this.awayUser.abbr()) {
+                homeUserScore = this.getScore(this.home.abbr) + this.getScore(this.away.abbr);
             } else {
-                if (!this.draftdb.getUserByAbbr(this.winner().abbr).isNone()) {
-                    if (this.winner().abbr === this.home.abbr)
-                        tmpstr = tmpstr + `${this.homeUser.name} +3`;
-                    else tmpstr = tmpstr + `${this.awayUser.name} +3`;
-                }
+                homeUserScore = this.getScore(this.home.abbr);
+                awayUserScore = this.getScore(this.away.abbr);
             }
+
+            if (homeUserScore > 0 && awayUserScore > 0 && !this.homeUser.isNone() && !this.awayUser.isNone())
+                tmpstr = tmpstr + `, ${this.homeUser.name} +${homeUserScore}, ${this.awayUser.name} +${awayUserScore}`;
+            else if (homeUserScore > 0 && !this.homeUser.isNone())
+                tmpstr = tmpstr + `, ${this.homeUser.name} +${homeUserScore}`
+            else if (awayUserScore > 0 && !this.awayUser.isNone())
+                tmpstr = tmpstr + `, ${this.awayUser.name} +${awayUserScore}`
 
             return tmpstr;
         }
@@ -205,10 +211,31 @@ export class Game implements IGame {
     public getScore(abbr: string): number {
         if (!this.complete) return 0;
 
+        let ro16Bonus = 0;
+        if (this.round === 1) // bonus point for making it to round of 16
+            ro16Bonus = 1;
+
+        let finalBonus = 0;
+        if (this.round === 4) // bonus point for making it to round of 16
+            finalBonus = 1;
+
         if (this.tie()) return 1;
 
-        if (this.winner().abbr === abbr) return 3;
+        if (this.winner().abbr === abbr) {
+            return 3 + ro16Bonus + finalBonus;
+        }
 
-        return 0;
+        return ro16Bonus;
+    }
+
+    public gameStr(): string {
+        if (this.complete) {
+            if (this.tie())
+                return `Game(${this.away.cleanName()}, ${this.home.cleanName()}, ${this.round}, None, ${this.awayScore}, ${this.homeScore}),`
+
+            return `Game(${this.away.cleanName()}, ${this.home.cleanName()}, ${this.round}, ${this.winner().cleanName()}, ${this.awayScore}, ${this.homeScore}),`
+        }
+
+        return `Game(${this.away.cleanName()}, ${this.home.cleanName()}, ${this.round}),`
     }
 }
