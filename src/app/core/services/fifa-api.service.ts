@@ -17,12 +17,7 @@ import { UserDatabaseService } from './user-database.service';
     providedIn: 'root',
 })
 export class FIFAApiService {
-    private apiUrl = 'https://api.fifa.com/api/v3/calendar/matches';
-    private apiSearchParams = {
-        language: 'en',
-        count: '500',
-        idSeason: '255711',
-    };
+    private apiUrl = 'https://bdfed.stitch.mlbinfra.com/bdfed/transform-mlb-schedule?stitch_env=prod&sortTemplate=5&sportId=51&startDate=2023-03-7&endDate=2023-03-21&gameType=S&&gameType=R&&gameType=F&&gameType=D&&gameType=L&&gameType=W&&gameType=A&language=en&leagueId=159&&leagueId=160&contextTeamId=';
 
     httpOptions = {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -37,16 +32,18 @@ export class FIFAApiService {
 
     getGames(): Observable<IGame[]> {
         const url = new URL(this.apiUrl);
-        for (const [key, value] of Object.entries(this.apiSearchParams)) {
-            url.searchParams.set(key, value);
-        }
 
         return this.http.get<FIFAData>(url.href).pipe(
             map((data) => {
                 const games: IGame[] = [];
-                for (const result of data.Results) {
-                    if (result.Away && result.Home)
-                        games.push(new Game(result, this.teamdb, this.draftdb));
+                for (const date of data.dates) {
+                    for (const game of date.games) {
+                        try {
+                            games.push(new Game(game, this.teamdb, this.draftdb));
+                        } catch(e) {
+                            console.log(e);
+                        }
+                    }
                 }
 
                 const sortedGames = games.sort((a, b) => a.gt - b.gt);

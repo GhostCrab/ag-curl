@@ -12,12 +12,10 @@ export class DraftDatabaseService {
 
     constructor(private userdb: UserDatabaseService, private teamdb: TeamDatabaseService) {
         this.drafts = [
-            new Draft(userdb.get("Andrew"), [teamdb.get('France'),teamdb.get('USA'),teamdb.get('Wales'),teamdb.get('Japan')]),
-            new Draft(userdb.get("Cooper"), [teamdb.get('England'),teamdb.get('Senegal'),teamdb.get('Uruguay'),teamdb.get('Korea')]),
-            new Draft(userdb.get("Ryan"),   [teamdb.get('Brazil'),teamdb.get('Denmark'),teamdb.get('Croatia'),teamdb.get('Ecuador')]),
-            new Draft(userdb.get("TJ"),     [teamdb.get('Argentina'),teamdb.get('Portugal'),teamdb.get('Mexico'),teamdb.get('Canada')]),
-            new Draft(userdb.get("Micah"),  [teamdb.get('Spain'),teamdb.get('Belgium'),teamdb.get('Switzerland'),teamdb.get('Poland')]),
-            new Draft(userdb.get("Bardia"), [teamdb.get('Netherlands'),teamdb.get('Germany'),teamdb.get('Iran'),teamdb.get('Ghana')])
+            new Draft(userdb.get("Andrew"), [teamdb.get('DOM'),teamdb.get('MEX'),teamdb.get('TPE'),teamdb.get('ITA'),teamdb.get('CHN')]),
+            new Draft(userdb.get("Brad"),   [teamdb.get('USA'),teamdb.get('CUB'),teamdb.get('CAN'),teamdb.get('PAN'),teamdb.get('NCA')]),
+            new Draft(userdb.get("Cooper"), [teamdb.get('JPN'),teamdb.get('KOR'),teamdb.get('NED'),teamdb.get('ISR'),teamdb.get('GBR')]),
+            new Draft(userdb.get("Ryan"),   [teamdb.get('VEN'),teamdb.get('PUR'),teamdb.get('COL'),teamdb.get('AUS'),teamdb.get('CZE')]),
         ]
     }
 

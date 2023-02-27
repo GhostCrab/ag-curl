@@ -6,7 +6,7 @@ import { Component, HostBinding } from '@angular/core';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'World Cup 2022 Draft Club';
+  title = 'WBC 2023 Draft Club';
   name = 'NavigationBarProject';
 
   @HostBinding("class.drawer-open")

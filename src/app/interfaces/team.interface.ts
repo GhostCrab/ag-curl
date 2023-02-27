@@ -30,8 +30,6 @@ export class Team {
     }
 
     cleanName(): string {
-        if (this.name === "Costa Rica") return "CostaRica";
-        if (this.name === "Saudi Arabia") return "SaudiArabia";
         return this.name;
     }
 }

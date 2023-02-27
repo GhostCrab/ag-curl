@@ -1,6 +1,6 @@
 import { DraftDatabaseService } from '../core/services/draft-database.service';
 import { TeamDatabaseService } from '../core/services/team-database.service';
-import { FIFADataResult } from './fifa-api.interface';
+import { FIFAGame } from './fifa-api.interface';
 import { ITeam } from './team.interface';
 import { IUser } from './user.interface';
 
@@ -46,53 +46,47 @@ export class Game implements IGame {
     public knockout: boolean;
     public round: number;
 
-    private matchTime: string;
+    private inning: string;
     private teamdb: TeamDatabaseService;
     private draftdb: DraftDatabaseService;
 
     //https://api.fifa.com/api/v3/picture/flags-{format}-{size}/ECU
 
     constructor(
-        result: FIFADataResult,
+        game: FIFAGame,
         teamdb: TeamDatabaseService,
         draftdb: DraftDatabaseService
     ) {
-        this.id = result.MatchNumber;
-        this.home = teamdb.get(result.Home.Abbreviation);
-        this.away = teamdb.get(result.Away.Abbreviation);
+        this.id = game.gamePk;
+        this.home = teamdb.get(game.teams.home.team.abbreviation);
+        this.away = teamdb.get(game.teams.away.team.abbreviation);
         this.homeScore =
-            result.HomeTeamScore === null ? 0 : result.HomeTeamScore;
+            game.linescore.teams.home.runs === undefined ? 0 : game.linescore.teams.home.runs;
         this.awayScore =
-            result.AwayTeamScore === null ? 0 : result.AwayTeamScore;
-        this.homePenaltyScore =
-            result.HomeTeamPenaltyScore === null
-                ? 0
-                : result.HomeTeamPenaltyScore;
-        this.awayPenaltyScore =
-            result.AwayTeamPenaltyScore === null
-                ? 0
-                : result.AwayTeamPenaltyScore;
-        this.active = result.MatchStatus === 3;
-        this.complete = result.MatchStatus === 0;
-        this.gt = new Date(result.LocalDate).getTime() - 10800000;
-        this.homeImg = result.Home.PictureUrl.replace('{format}', 'sq').replace(
-            '{size}',
-            '1'
-        );
-        this.awayImg = result.Away.PictureUrl.replace('{format}', 'sq').replace(
-            '{size}',
-            '1'
-        );
-        this.homeUser = draftdb.getUserByAbbr(result.Home.Abbreviation);
-        this.awayUser = draftdb.getUserByAbbr(result.Away.Abbreviation);
-        this.knockout = result.StageName[0].Description !== 'First stage';
-        this.matchTime = result.MatchTime === null ? '' : result.MatchTime;
+            game.linescore.teams.away.runs === undefined ? 0 : game.linescore.teams.away.runs;
+        this.homePenaltyScore = 0;
+        this.awayPenaltyScore = 0;
+        this.active = game.status.detailedState.includes("In Progress");
+        this.complete = game.status.detailedState.includes("Final");
+        this.gt = new Date(game.gameDate).getTime();
+        // https://midfield.mlbstatic.com/v1/team/nm/spots/24
+        this.homeImg = game.teams.home.team.link.replace('/api/', 'https://midfield.mlbstatic.com/').replace('teams', 'team') + '/spots/24'
+        this.awayImg = game.teams.away.team.link.replace('/api/', 'https://midfield.mlbstatic.com/').replace('teams', 'team') + '/spots/24'
+        this.homeUser = draftdb.getUserByAbbr(game.teams.home.team.abbreviation);
+        this.awayUser = draftdb.getUserByAbbr(game.teams.away.team.abbreviation);
+        this.knockout = !game.description.includes("Pool");
+        this.inning = 
+            this.active && 
+            game.linescore.currentInningOrdinal !== undefined && 
+            game.linescore.inningHalf !== undefined ? 
+                game.linescore.inningHalf + ' ' + game.linescore.currentInningOrdinal 
+            : 
+                '';
         this.round = 0;
         if (this.knockout) {
-            if (result.StageName[0].Description === "Round of 16") this.round = 1;
-            else if (result.StageName[0].Description === "Quarter-final") this.round = 2;
-            else if (result.StageName[0].Description === "Semi-final") this.round = 3;
-            else if (result.StageName[0].Description === "Final") this.round = 4;
+            if (game.description.includes('Quarterfinal')) this.round = 2;
+            else if (game.description.includes('Semifinal')) this.round = 3;
+            else if (game.description.includes('Championship')) this.round = 4;
             else this.round = -1; // play-off for 3rd
         }
 
@@ -129,7 +123,7 @@ export class Game implements IGame {
         }
 
         if (this.active) {
-            return `IN PROGRESS: ${this.awayScore} - ${this.homeScore}`;
+            return `${this.inning}: ${this.awayScore} - ${this.homeScore}`;
         }
 
         return new Date(this.gt).toLocaleString();
@@ -148,7 +142,7 @@ export class Game implements IGame {
         }
 
         if (this.active) {
-            return `IN PROGRESS: ${this.awayScore} - ${this.homeScore}`;
+            return `${this.inning}: ${this.awayScore} - ${this.homeScore}`;
         }
 
         return new Date(this.gt).toLocaleString();
@@ -212,11 +206,11 @@ export class Game implements IGame {
         if (!this.complete) return 0;
 
         let ro16Bonus = 0;
-        if (this.round === 1) // bonus point for making it to round of 16
+        if (this.round === 2) // bonus point for making it to knockout
             ro16Bonus = 1;
 
         let finalBonus = 0;
-        if (this.round === 4) // bonus point for making it to round of 16
+        if (this.round === 4) // bonus point for winning the final
             finalBonus = 1;
 
         if (this.tie()) return 1;

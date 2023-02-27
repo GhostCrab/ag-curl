@@ -7,11 +7,9 @@ import { IUser, User } from 'src/app/interfaces/user.interface';
 export class UserDatabaseService {
     private users: IUser[] = [
         new User('Andrew'),
-        new User('Bardia'),
+        new User('Brad'),
         new User('Cooper'),
-        new User('Micah'),
-        new User('Ryan'),
-        new User('TJ')
+        new User('Ryan')
     ];
 
     public none: IUser = new User('');

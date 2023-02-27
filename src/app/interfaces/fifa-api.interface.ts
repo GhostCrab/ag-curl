@@ -1,41 +1,64 @@
 export interface FIFAData {
-    ContinuationHash: string;
-    ContinuationToken: string;
-    Results: FIFADataResult[];
+    copyright: string;
+    dates: FIFADataResult[];
+    status: number;
+    totalEvents: number;
+    totalGames: number;
+    totalGamesInProgress: number;
+    totalItems: number;
 }
 
 export interface FIFADataResult {
-    StageName: [
-        {
-            Locale: string;
-            Description: string;
-        }
-    ];
-    GroupName: [
-        {
-            Locale: string;
-            Description: string;
-        }
-    ];
-    Date: string;
-    LocalDate: string;
-    Home: {
-        PictureUrl: string;
-        Abbreviation: string;
-        ShortClubName: string;
-    };
-    Away: {
-        PictureUrl: string;
-        Abbreviation: string;
-        ShortClubName: string;
-    };
-    HomeTeamScore: number | null;
-    AwayTeamScore: number | null;
-    HomeTeamPenaltyScore: number | null;
-    AwayTeamPenaltyScore: number | null;
-    MatchTime: string | null;
-    MatchStatus: number;
-    ResultType: number;
-    MatchNumber: number;
-    TimeDefined: boolean;
+    date: string;
+    games: FIFAGame[];
+}
+
+export interface FIFAGame {
+    linescore: FIFALinescore;
+    status: FIFAStatus;
+    teams: FIFATeams;
+    gamePk: number;
+    gameDate: string;
+    description: string;
+}
+
+export interface FIFALinescore {
+    balls?: number;
+    strikes?: number;
+    outs?: number;
+    currentInning?: number;
+    currentInningOrdinal?: string;
+    inningHalf?: string;
+    teams: FIFALinescoreTeams;
+}
+
+export interface FIFAStatus {
+    detailedState: string;
+}
+
+export interface FIFATeams {
+    away: FIFATeam;
+    home: FIFATeam;
+}
+
+export interface FIFATeam {
+    team: {
+        abbreviation: string;
+        clubName: string;
+        link: string;
+    }
+
+    score: number;
+}
+
+export interface FIFALinescoreTeams {
+    away: FIFALinescoreTeam;
+    home: FIFALinescoreTeam;
+}
+
+export interface FIFALinescoreTeam {
+    errors?: number;
+    hits?: number;
+    leftOnBase?: number;
+    runs?: number;
 }
