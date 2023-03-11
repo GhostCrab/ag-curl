@@ -6,7 +6,7 @@ import { ITeam, Team } from 'src/app/interfaces/team.interface';
 })
 export class TeamDatabaseService {
     private teams: ITeam[] = [
-        new Team('Dominican Republic', 'DOM',  'D', 1,  200),
+        new Team('Dom. Republic',      'DOM',  'D', 1,  200),
         new Team('USA',                'USA', 'C', 2,  275),
         new Team('Japan',              'JPN', 'B', 3,  300),
         new Team('Venezuela',          'VEN', 'D', 4,  1100),
@@ -43,6 +43,11 @@ export class TeamDatabaseService {
 
         new Team('S1W', 'S1W', 'A', 1, 100000),
         new Team('S2W', 'S2W', 'B', 2, 100000),
+
+        new Team('A TBD', 'A', 'A', 1, 100000),
+        new Team('B TBD', 'B', 'B', 2, 100000),
+        new Team('C TBD', 'C', 'A', 3, 100000),
+        new Team('D TBD', 'D', 'B', 4, 100000),
     ];
 
     constructor() {}
