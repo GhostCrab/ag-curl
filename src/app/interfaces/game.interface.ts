@@ -67,7 +67,7 @@ export class Game implements IGame {
         this.homePenaltyScore = 0;
         this.awayPenaltyScore = 0;
         this.active = game.status.detailedState.includes("In Progress");
-        this.complete = game.status.detailedState.includes("Final");
+        this.complete = game.status.detailedState.includes("Final") || game.status.detailedState.includes("Mercy");
         this.gt = new Date(game.gameDate).getTime();
         // https://midfield.mlbstatic.com/v1/team/nm/spots/24
         this.homeImg = game.teams.home.team.link.replace('/api/', 'https://midfield.mlbstatic.com/').replace('teams', 'team') + '/spots/24'
@@ -162,11 +162,11 @@ export class Game implements IGame {
             }
 
             if (homeUserScore > 0 && awayUserScore > 0 && !this.homeUser.isNone() && !this.awayUser.isNone())
-                tmpstr = tmpstr + `, ${this.homeUser.name} +${homeUserScore}, ${this.awayUser.name} +${awayUserScore}`;
+                tmpstr = tmpstr + `${this.homeUser.name} +${homeUserScore}, ${this.awayUser.name} +${awayUserScore}`;
             else if (homeUserScore > 0 && !this.homeUser.isNone())
-                tmpstr = tmpstr + `, ${this.homeUser.name} +${homeUserScore}`
+                tmpstr = tmpstr + `${this.homeUser.name} +${homeUserScore}`
             else if (awayUserScore > 0 && !this.awayUser.isNone())
-                tmpstr = tmpstr + `, ${this.awayUser.name} +${awayUserScore}`
+                tmpstr = tmpstr + `${this.awayUser.name} +${awayUserScore}`
 
             return tmpstr;
         }
