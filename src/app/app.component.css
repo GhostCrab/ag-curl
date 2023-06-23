@@ -34,6 +34,11 @@
     margin: 0 auto;
 }
 
+.factorial-response {
+  color: white;
+  font-weight: bold;
+}
+
 .title {
     padding: 10px 0;
     /* letter-spacing: 0.075em; */
