@@ -62,8 +62,11 @@ export class ScoreListComponent implements OnInit {
                     if (game.complete) completedGames++;
                     let addScore = game.getScore(team.abbr);
 
-                    if (addScore > 1) {
+                    if (addScore > 0) {
                         score += game.getScore(team.abbr);
+                    }
+
+                    if (addScore > 1) {
                         wonGames += 1;
                     }
                 }
