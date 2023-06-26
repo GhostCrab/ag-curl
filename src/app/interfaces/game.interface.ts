@@ -11,6 +11,8 @@ export interface IGame {
   away: ITeam;
   homeScore: number;
   awayScore: number;
+  homePenaltyScore: number;
+  awayPenaltyScore: number;
   active: boolean;
   complete: boolean;
   gt: number;
@@ -29,6 +31,7 @@ export interface IGame {
   roundStr(): string;
   simulate(games: IGame[], teamGroups?: { [key: string]: ITeam[]; }): void;
   includesTeam(team: ITeam): boolean;
+  compare(game: IGame): boolean;
 }
 
 export class Game implements IGame {
@@ -334,5 +337,19 @@ export class Game implements IGame {
 
   includesTeam(team: ITeam): boolean {
     return this.away.abbr === team.abbr || this.home.abbr === team.abbr;
+  }
+
+  compare(game: IGame): boolean {
+    if (
+      this.active !== game.active ||
+      this.complete !== game.complete ||
+      this.awayScore !== game.awayScore ||
+      this.homeScore !== game.homeScore ||
+      this.awayPenaltyScore !== game.awayPenaltyScore ||
+      this.homePenaltyScore !== game.homePenaltyScore
+    )
+      return false;
+
+    return true;
   }
 }

@@ -36,14 +36,6 @@ export class FIFAApiService {
 
         return this.http.get<FIFAData>(url.href).pipe(
             map((data) => {
-
-              // const newTeams: Set<string> = new Set();
-              // data.Results.forEach(result => {
-              //   newTeams.add(`new Team('${result.Home?.ShortClubName ? result.Home?.ShortClubName : result.PlaceHolderA}', '${result.Home?.Abbreviation ? result.Home?.Abbreviation : result.PlaceHolderA}',  '${result.GroupName[0]?.Description ? result.GroupName[0]?.Description.substring(6) : 'X'}', 0, 0),`);
-              //   newTeams.add(`new Team('${result.Away?.ShortClubName ? result.Away?.ShortClubName : result.PlaceHolderB}', '${result.Away?.Abbreviation ? result.Away?.Abbreviation : result.PlaceHolderB}',  '${result.GroupName[0]?.Description ? result.GroupName[0]?.Description.substring(6) : 'X'}', 0, 0),`);
-              // });
-              // Array.from(newTeams).forEach(team => console.log(team));
-              
               const games: IGame[] = [];
               for (const result of data.Results) {
                   games.push(new Game(result, this.teamdb, this.draftdb));

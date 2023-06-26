@@ -3,7 +3,7 @@
     <mat-grid-list
       cols="19"
       rowHeight="3em"
-      *ngFor="let game of games$ | async"
+      *ngFor="let game of games"
     >
       <mat-grid-tile colspan="1"
         ><div class="game-status">
@@ -59,7 +59,7 @@
     <mat-grid-list
       cols="18"
       rowHeight="3em"
-      *ngFor="let game of games$ | async"
+      *ngFor="let game of games"
     >
       <mat-grid-tile
         colspan="5"
