@@ -1,4 +1,4 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, Output } from '@angular/core';
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -10,7 +10,7 @@ function sleep(ms: number) {
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'WBC 2023 Draft Club';
+  title = 'WWC 2023 Draft Club';
   name = 'NavigationBarProject';
 
   factorialResult: number = 0;
