@@ -1,7 +1,7 @@
 import { Component, HostBinding } from '@angular/core';
 
 function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 @Component({
@@ -14,7 +14,7 @@ export class AppComponent {
   name = 'NavigationBarProject';
 
   factorialResult: number = 0;
-  factorialInput: number = 1;
+  factorialInput: number = navigator.hardwareConcurrency;
   testTimer: number = 0;
 
   @HostBinding('class.drawer-open')
@@ -24,25 +24,31 @@ export class AppComponent {
     this.isDrawerOpen = isDrawerOpen;
   }
 
-  constructor() {
-  }
+  constructor() {}
 
   async calculateFactorialMany() {
     const start = performance.now();
     let runners = 0;
     this.factorialResult = 0;
-    while (this.factorialResult < 50) {
-      if (runners >= 3) {
+
+    for (let i = 0; i < 50; i++) {
+      if (runners >= navigator.hardwareConcurrency) {
+			//if (runners >= 1) {
         await sleep(20);
+				i--;
         continue;
       }
-      
-      runners++;
-      this.calculateFactorial( ({ data }) => {
+
+			runners++;
+      this.calculateFactorial(({ data }) => {
         runners--;
         this.factorialResult++;
-      })
+      });
     }
+
+		while (this.factorialResult < 50) {
+			await sleep(20);
+		}
 
     const end = performance.now();
     this.testTimer = end - start;
