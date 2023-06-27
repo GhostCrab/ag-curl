@@ -2,77 +2,125 @@ import { Injectable } from '@angular/core';
 import { ITeam, Team } from 'src/app/interfaces/team.interface';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class TeamDatabaseService {
-    private teams: ITeam[] = [
-        new Team('Dom. Republic',      'DOM',  'D', 1,  200),
-        new Team('USA',                'USA', 'C', 2,  275),
-        new Team('Japan',              'JPN', 'B', 3,  300),
-        new Team('Venezuela',          'VEN', 'D', 4,  1100),
-        new Team('Puerto Rico',        'PUR',  'D', 5,  1100),
-        new Team('Korea',              'KOR', 'B', 6,  1200),
-        new Team('Cuba',               'CUB', 'A', 7,  2000),
-        new Team('Mexico',             'MEX', 'C', 8,  2200),
-        new Team('Chinese Taipei',     'TPE', 'A', 9,  5000),
-        new Team('Canada',             'CAN', 'C', 10, 5000),
-        new Team('Netherlands',        'NED', 'A', 11, 6500),
-        new Team('Colombia',           'COL', 'C', 12, 13000),
-        new Team('Australia',          'AUS', 'B', 13, 13000),
-        new Team('Israel',             'ISR', 'D', 14, 15000),
-        new Team('Panama',             'PAN', 'A', 15, 15000),
-        new Team('Italy',              'ITA', 'A', 16, 15000),
-        new Team('China',              'CHN', 'B', 17, 20000),
-        new Team('Nicaragua',          'NCA', 'D', 18, 20000),
-        new Team('Great Britain',      'GBR', 'C', 19, 50000),
-        new Team('Czech Republic',     'CZE', 'B', 20, 50000),
-        
-        new Team('A1', 'A1', 'A', 1, 100000),
-        new Team('B1', 'B1', 'B', 2, 100000),
-        new Team('C1', 'C1', 'C', 3, 100000),
-        new Team('D1', 'D1', 'D', 4, 100000),
-        new Team('A2', 'A2', 'A', 5, 100000),
-        new Team('B2', 'B2', 'B', 6, 100000),
-        new Team('C2', 'C2', 'C', 7, 100000),
-        new Team('D2', 'D2', 'D', 8, 100000),
+  private teams: ITeam[] = [
+    new Team('New Zealand',         'NZL', 'A', 15, 6500),
+    new Team('Norway',              'NOR', 'A', 11, 4000),
+    new Team('Philippines',         'PHI', 'A', 29, 50000),
+    new Team('Switzerland',         'SUI', 'A', 23, 25000),
 
-        new Team('Q1W', 'Q1W', 'A', 1, 100000),
-        new Team('Q2W', 'Q2W', 'B', 2, 100000),
-        new Team('Q3W', 'Q3W', 'C', 3, 100000),
-        new Team('Q4W', 'Q4W', 'D', 4, 100000),
+    new Team('Australia',           'AUS', 'B',  6, 1200),
+    new Team('Republic of Ireland', 'IRL', 'B', 19, 15000),
+    new Team('Nigeria',             'NGA', 'B', 25, 25000),
+    new Team('Canada',              'CAN', 'B', 10, 2500),
+    
+    new Team('Spain',               'ESP', 'C',  3, 650),
+    new Team('Costa Rica',          'CRC', 'C', 31, 50000),
+    new Team('Zambia',              'ZAM', 'C', 27, 50000),
+    new Team('Japan',               'JPN', 'C', 12, 4000),
+    
+    new Team('England',             'ENG', 'D',  2, 350),
+    new Team('Haiti',               'HAI', 'D', 21, 15000),
+    new Team('Denmark',             'DEN', 'D', 13, 5000),
+    new Team('China PR',            'CHN', 'D', 17, 8000),
+    
+    new Team('USA',                 'USA', 'E',  1, 250),
+    new Team('Vietnam',             'VIE', 'E', 28, 50000),
+    new Team('Netherlands',         'NED', 'E',  8, 1600),
+    new Team('Portugal',            'POR', 'E', 18, 10000),
+    
+    new Team('France',              'FRA', 'F',  5, 750),
+    new Team('Jamaica',             'JAM', 'F', 30, 50000),
+    new Team('Brazil',              'BRA', 'F',  9, 2500),
+    new Team('Panama',              'PAN', 'F', 32, 50000),
 
-        new Team('S1W', 'S1W', 'A', 1, 100000),
-        new Team('S2W', 'S2W', 'B', 2, 100000),
+    new Team('Sweden',              'SWE', 'G',  7, 1400),
+    new Team('South Africa',        'RSA', 'G', 24, 25000),
+    new Team('Italy',               'ITA', 'G', 16, 6500),
+    new Team('Argentina',           'ARG', 'G', 22, 20000),
+    
+    new Team('Germany',             'GER', 'H',  4, 650),
+    new Team('Morocco',             'MAR', 'H', 26, 25000),
+    new Team('Colombia',            'COL', 'H', 20, 15000),
+    new Team('Korea Republic',      'KOR', 'H', 14, 6500),
 
-        new Team('A TBD', 'A', 'A', 1, 100000),
-        new Team('B TBD', 'B', 'B', 2, 100000),
-        new Team('C TBD', 'C', 'A', 3, 100000),
-        new Team('D TBD', 'D', 'B', 4, 100000),
-    ];
+    new Team('1A', '1A', 'X', 0, 0.001),
+    new Team('2C', '2C', 'X', 0, 0.001),
+    new Team('1C', '1C', 'X', 0, 0.001),
+    new Team('2A', '2A', 'X', 0, 0.001),
+    new Team('1E', '1E', 'X', 0, 0.001),
+    new Team('2G', '2G', 'X', 0, 0.001),
+    new Team('1G', '1G', 'X', 0, 0.001),
+    new Team('2E', '2E', 'X', 0, 0.001),
+    new Team('1D', '1D', 'X', 0, 0.001),
+    new Team('2B', '2B', 'X', 0, 0.001),
+    new Team('1B', '1B', 'X', 0, 0.001),
+    new Team('2D', '2D', 'X', 0, 0.001),
+    new Team('1H', '1H', 'X', 0, 0.001),
+    new Team('2F', '2F', 'X', 0, 0.001),
+    new Team('1F', '1F', 'X', 0, 0.001),
+    new Team('2H', '2H', 'X', 0, 0.001),
 
-    constructor() {}
+    new Team('W49', 'W49', 'X', 0, 0.001),
+    new Team('W51', 'W51', 'X', 0, 0.001),
+    new Team('W50', 'W50', 'X', 0, 0.001),
+    new Team('W52', 'W52', 'X', 0, 0.001),
+    new Team('W53', 'W53', 'X', 0, 0.001),
+    new Team('W55', 'W55', 'X', 0, 0.001),
+    new Team('W54', 'W54', 'X', 0, 0.001),
+    new Team('W56', 'W56', 'X', 0, 0.001),
+    new Team('W57', 'W57', 'X', 0, 0.001),
+    new Team('W58', 'W58', 'X', 0, 0.001),
+    new Team('W59', 'W59', 'X', 0, 0.001),
+    new Team('W60', 'W60', 'X', 0, 0.001),
 
-    get(s: string): ITeam {
-        if (s.length === 3) {
-            for (const team of this.teams) {
-                if (team.abbr === s) return team;
-            }
+    new Team('RU61', 'RU61', 'X', 0, 0.001),
+    new Team('RU62', 'RU62', 'X', 0, 0.001),
 
-            throw new Error('Unable to find team with abbreviation ' + s);
-        }
+    new Team('W61', 'W61', 'X', 0, 0.001),
+    new Team('W62', 'W62', 'X', 0, 0.001),
+  ];
 
-        let fixed = s
-        if (fixed === "IR Iran")
-            fixed = "Iran"
+  constructor() {}
 
-        for (const team of this.teams) {
-            if (team.name === fixed) return team;
-        }
+  get(s: string): ITeam {
+    if (s.length === 3) {
+      for (const team of this.teams) {
+        if (team.abbr === s) return team;
+      }
 
-        throw new Error('Unable to find team with name ' + fixed);
+      throw new Error('Unable to find team with abbreviation ' + s);
     }
 
-    public all(): ITeam[] {
-        return this.teams;
+    let fixed = s;
+    if (fixed === 'IR Iran') fixed = 'Iran';
+
+    for (const team of this.teams) {
+      if (team.name === fixed) return team;
     }
+
+    throw new Error('Unable to find team with name ' + fixed);
+  }
+
+  public all(): ITeam[] {
+    return this.teams;
+  }
+
+  public resetGames(): void {
+    this.teams.forEach(team => team.resetGames());
+  }
+
+  public teamsByGroup() {
+    const teamGroups: { [key: string]: ITeam[]; } = {};
+
+    this.teams.filter(team => team.rank > 0).forEach(team => {
+      if(!(team.group in teamGroups)) teamGroups[team.group] = [];
+
+      teamGroups[team.group].push(team);
+    });
+
+    return teamGroups;
+  }
 }

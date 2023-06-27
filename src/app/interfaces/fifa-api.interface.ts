@@ -1,64 +1,43 @@
 export interface FIFAData {
-    copyright: string;
-    dates: FIFADataResult[];
-    status: number;
-    totalEvents: number;
-    totalGames: number;
-    totalGamesInProgress: number;
-    totalItems: number;
+  ContinuationHash: string;
+  ContinuationToken: string;
+  Results: FIFADataResult[];
 }
 
 export interface FIFADataResult {
-    date: string;
-    games: FIFAGame[];
-}
-
-export interface FIFAGame {
-    linescore: FIFALinescore;
-    status: FIFAStatus;
-    teams: FIFATeams;
-    gamePk: number;
-    gameDate: string;
-    description: string;
-}
-
-export interface FIFALinescore {
-    balls?: number;
-    strikes?: number;
-    outs?: number;
-    currentInning?: number;
-    currentInningOrdinal?: string;
-    inningHalf?: string;
-    teams: FIFALinescoreTeams;
-}
-
-export interface FIFAStatus {
-    detailedState: string;
-}
-
-export interface FIFATeams {
-    away: FIFATeam;
-    home: FIFATeam;
-}
-
-export interface FIFATeam {
-    team: {
-        abbreviation: string;
-        clubName: string;
-        link: string;
+  StageName: [
+    {
+      Locale: string;
+      Description: string;
     }
-
-    score: number;
-}
-
-export interface FIFALinescoreTeams {
-    away: FIFALinescoreTeam;
-    home: FIFALinescoreTeam;
-}
-
-export interface FIFALinescoreTeam {
-    errors?: number;
-    hits?: number;
-    leftOnBase?: number;
-    runs?: number;
+  ];
+  GroupName: [
+    {
+      Locale: string;
+      Description: string;
+    }
+  ];
+  Date: string;
+  LocalDate: string;
+  Home: {
+    PictureUrl: string;
+    Abbreviation: string;
+    ShortClubName: string;
+  } | null;
+  Away: {
+    PictureUrl: string;
+    Abbreviation: string;
+    ShortClubName: string;
+  } | null;
+  HomeTeamScore: number | null;
+  AwayTeamScore: number | null;
+  HomeTeamPenaltyScore: number | null;
+  AwayTeamPenaltyScore: number | null;
+  MatchTime: string | null;
+  MatchStatus: number;
+  ResultType: number;
+  MatchNumber: number;
+  TimeDefined: boolean;
+  PlaceHolderA: string;
+  PlaceHolderB: string;
 }
