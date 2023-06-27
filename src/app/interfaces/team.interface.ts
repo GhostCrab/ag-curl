@@ -96,8 +96,6 @@ export class Team {
         if (vsGames[0].tie())
           return Math.random() - 0.5;
 
-        console.log(`${this.group} ${this.rrScore} ${this.abbr} tied ${vs.abbr}, vs winner ${vsGames[0].winner().abbr}`)
-
         if (vsGames[0].winner().abbr === this.abbr)
           return -1;
 

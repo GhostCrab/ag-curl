@@ -25,13 +25,38 @@ export interface IGame {
   miniStatusTop(): string;
   miniStatusBottom(): string;
   tie(): boolean;
-  winner(): ITeam;
+  winner(abstract?: IAbstractScore): ITeam;
+  winnerAbbr(abstract?: IAbstractScore): string;
   getScore(abbr: string): number;
   gameStr(): string;
   roundStr(): string;
-  simulate(games: IGame[], teamGroups?: { [key: string]: ITeam[]; }): void;
+  simulate(results: ISimulationResult[], teamGroups?: { [key: string]: ITeam[]; }): ISimulationResult;
   includesTeam(team: ITeam): boolean;
   compare(game: IGame): boolean;
+  initalizeFromResult(): void;
+}
+
+interface IAbstractScore {
+  homeTeamAbbr: string;
+  awayTeamAbbr: string;
+  homeScore: number;
+  awayScore: number;
+  homePenaltyScore: number;
+  awayPenaltyScore: number;
+}
+
+export interface ISimulationResult {
+  homeTeamAbbr: string;
+  awayTeamAbbr: string;
+  winnerTeamAbbr: string;
+  homeLogOdds: number;
+  awayLogOdds: number;
+  homeScore: number;
+  awayScore: number;
+  homePenaltyScore: number;
+  awayPenaltyScore: number;
+  homePoints: number;
+  awayPoints: number;
 }
 
 export class Game implements IGame {
@@ -50,45 +75,42 @@ export class Game implements IGame {
   public knockout: boolean;
   public round: number;
 
-  private matchTime: string;
-  private teamdb: TeamDatabaseService;
-  private draftdb: DraftDatabaseService;
-
   //https://api.fifa.com/api/v3/picture/flags-{format}-{size}/ECU
 
   constructor(
-    result: FIFADataResult,
-    teamdb: TeamDatabaseService,
-    draftdb: DraftDatabaseService
+    private readonly result: FIFADataResult,
+    private readonly teamdb: TeamDatabaseService,
+    private readonly draftdb: DraftDatabaseService
   ) {
-    this.id = result.MatchNumber;
-    this.home = teamdb.get(result.Home?.Abbreviation ? result.Home.Abbreviation : result.PlaceHolderA);
-    this.away = teamdb.get(result.Away?.Abbreviation ? result.Away.Abbreviation : result.PlaceHolderB);
-    this.homeScore = result.HomeTeamScore === null ? 0 : result.HomeTeamScore;
-    this.awayScore = result.AwayTeamScore === null ? 0 : result.AwayTeamScore;
+    this.result = result;
+    this.initalizeFromResult();
+  }
+
+  initalizeFromResult() {
+    this.id = this.result.MatchNumber;
+    this.home = this.teamdb.get(this.result.Home?.Abbreviation ? this.result.Home.Abbreviation : this.result.PlaceHolderA);
+    this.away = this.teamdb.get(this.result.Away?.Abbreviation ? this.result.Away.Abbreviation : this.result.PlaceHolderB);
+    this.homeScore = this.result.HomeTeamScore === null ? 0 : this.result.HomeTeamScore;
+    this.awayScore = this.result.AwayTeamScore === null ? 0 : this.result.AwayTeamScore;
     this.homePenaltyScore =
-      result.HomeTeamPenaltyScore === null ? 0 : result.HomeTeamPenaltyScore;
+      this.result.HomeTeamPenaltyScore === null ? 0 : this.result.HomeTeamPenaltyScore;
     this.awayPenaltyScore =
-      result.AwayTeamPenaltyScore === null ? 0 : result.AwayTeamPenaltyScore;
-    this.active = result.MatchStatus === 3;
-    this.complete = result.MatchStatus === 0;
-    this.gt = new Date(result.LocalDate).getTime() - 10800000;
-    this.homeUser = draftdb.getUserByAbbr(this.home.abbr);
-    this.awayUser = draftdb.getUserByAbbr(this.away.abbr);
-    this.knockout = result.StageName[0].Description.toLowerCase() !== 'first stage';
-    this.matchTime = result.MatchTime === null ? '' : result.MatchTime;
+      this.result.AwayTeamPenaltyScore === null ? 0 : this.result.AwayTeamPenaltyScore;
+    this.active = this.result.MatchStatus === 3;
+    this.complete = this.result.MatchStatus === 0;
+    this.gt = new Date(this.result.LocalDate).getTime() - 10800000;
+    this.homeUser = this.draftdb.getUserByAbbr(this.home.abbr);
+    this.awayUser = this.draftdb.getUserByAbbr(this.away.abbr);
+    this.knockout = this.result.StageName[0].Description.toLowerCase() !== 'first stage';
     this.round = 0;
     if (this.knockout) {
-      if (result.StageName[0].Description === 'Round of 16') this.round = 1;
-      else if (result.StageName[0].Description === 'Quarter-final')
+      if (this.result.StageName[0].Description === 'Round of 16') this.round = 1;
+      else if (this.result.StageName[0].Description === 'Quarter-final')
         this.round = 2;
-      else if (result.StageName[0].Description === 'Semi-final') this.round = 3;
-      else if (result.StageName[0].Description === 'Final') this.round = 4;
+      else if (this.result.StageName[0].Description === 'Semi-final') this.round = 3;
+      else if (this.result.StageName[0].Description === 'Final') this.round = 4;
       else this.round = -1; // play-off for 3rd
     }
-
-    this.teamdb = teamdb;
-    this.draftdb = draftdb;
 
     if (this.complete) {
       this.home.registerGame(this);
@@ -197,35 +219,71 @@ export class Game implements IGame {
     return '';
   }
 
-  public tie(): boolean {
-    if (this.complete) {
+  public tie(abstract?: IAbstractScore): boolean {
+    const homeScore = abstract ? abstract.homeScore : this.homeScore;
+    const awayScore = abstract ? abstract.awayScore : this.awayScore;
+
+    if (this.complete || abstract) {
       if (this.knockout) return false;
 
-      return this.homeScore === this.awayScore;
+      return homeScore === awayScore;
     }
 
     throw Error('Attempted to get winner from incomplete game');
   }
 
-  public winner(): ITeam {
-    if (this.complete) {
-      if (!this.knockout && this.homeScore === this.awayScore)
-        throw Error('Game ended in a tie');
+  public winner(abstract?: IAbstractScore): ITeam {
+    if (this.complete || abstract) {
+      
+      const home = abstract ? this.teamdb.get(abstract.homeTeamAbbr) : this.home;
+      const away = abstract ? this.teamdb.get(abstract.awayTeamAbbr) : this.home;
+      const homeScore = abstract ? abstract.homeScore : this.homeScore;
+      const awayScore = abstract ? abstract.awayScore : this.awayScore;
+      const homePenaltyScore = abstract ? abstract.homePenaltyScore : this.homePenaltyScore;
+      const awayPenaltyScore = abstract ? abstract.awayPenaltyScore : this.awayPenaltyScore;
 
-      if (this.homeScore === this.awayScore) {
-        if (this.homePenaltyScore > this.awayPenaltyScore) return this.home;
-        return this.away;
+      // if (!this.knockout && homeScore === awayScore)
+      //   throw Error('Game ended in a tie');
+
+      if (homeScore === awayScore) {
+        if (homePenaltyScore > awayPenaltyScore) return home;
+        return away;
       }
 
-      if (this.homeScore > this.awayScore) return this.home;
-      return this.away;
+      if (homeScore > awayScore) return home;
+      return away;
     }
 
     throw Error('Attempted to get winner from incomplete game');
   }
 
-  public getScore(abbr: string): number {
-    if (!this.complete) return 0;
+  public winnerAbbr(abstract?: IAbstractScore): string {
+    if (this.complete || abstract) {
+      
+      const homeTeamAbbr = abstract ? abstract.homeTeamAbbr : this.home.abbr;
+      const awayTeamAbbr = abstract ? abstract.awayTeamAbbr : this.away.abbr;
+      const homeScore = abstract ? abstract.homeScore : this.homeScore;
+      const awayScore = abstract ? abstract.awayScore : this.awayScore;
+      const homePenaltyScore = abstract ? abstract.homePenaltyScore : this.homePenaltyScore;
+      const awayPenaltyScore = abstract ? abstract.awayPenaltyScore : this.awayPenaltyScore;
+
+      // if (!this.knockout && homeScore === awayScore)
+      //   throw Error('Game ended in a tie');
+
+      if (homeScore === awayScore) {
+        if (homePenaltyScore > awayPenaltyScore) return homeTeamAbbr;
+        return awayTeamAbbr;
+      }
+
+      if (homeScore > awayScore) return homeTeamAbbr;
+      return awayTeamAbbr;
+    }
+
+    throw Error('Attempted to get winner from incomplete game');
+  }
+
+  public getScore(abbr: string, abstract?: IAbstractScore): number {
+    if (!this.complete && !abstract) return 0;
 
     if (this.round === -1) // playoff for 3rd doesnt count for points
       return 0;
@@ -238,9 +296,9 @@ export class Game implements IGame {
     if (this.round === 4) // bonus point for winning the final
       finalBonus = 1;
 
-    if (this.tie()) return 1;
+    if (this.tie(abstract)) return 1;
 
-    if (this.winner().abbr === abbr) {
+    if (this.winnerAbbr(abstract) === abbr) {
       return 3 + ro16Bonus + finalBonus;
     }
 
@@ -264,21 +322,54 @@ export class Game implements IGame {
     }),`;
   }
 
-  simulate(games: IGame[], teamGroups?: { [key: string]: ITeam[]; }): void {
-    if (this.complete) return;
+  simulate(write: boolean, results: ISimulationResult[], teamGroups?: { [key: string]: ITeam[]; }): ISimulationResult {
+    if (this.complete) 
+      return {
+        homeTeamAbbr: this.home.abbr,
+        awayTeamAbbr: this.away.abbr,
+        winnerTeamAbbr: this.winnerAbbr(),
+        homeLogOdds: this.home.logOdds,
+        awayLogOdds: this.away.logOdds,
+        homeScore: this.homeScore,
+        awayScore: this.awayScore,
+        homePenaltyScore: this.homePenaltyScore,
+        awayPenaltyScore: this.awayPenaltyScore,
+        homePoints: this.getScore(this.home.abbr),
+        awayPoints: this.getScore(this.away.abbr)
+      };
 
+    let homeTeamAbbr = this.home.abbr;
+    let awayTeamAbbr = this.away.abbr;
+    let winnerTeamAbbr = this.away.abbr;
+    let homeLogOdds = this.home.logOdds;
+    let awayLogOdds = this.away.logOdds;
+    let homeScore = 0;
+    let awayScore = 0;
+    let homePenaltyScore = 0;
+    let awayPenaltyScore = 0;
+    let homePoints = 0;
+    let awayPoints = 0;
+    
     if (this.home.rank === 0) {
       if (this.round === 1 && teamGroups) {
         const groupRank = Number(this.home.name[0]) - 1;
         const group = this.home.name[1];
 
-        this.home = teamGroups[group][groupRank];
-        this.homeUser = this.draftdb.getUserByAbbr(this.home.abbr);
+        const homeTeam = teamGroups[group][groupRank];
+        homeTeamAbbr = homeTeam.abbr;
+        homeLogOdds = homeTeam.logOdds;
+        if (write) {
+          this.home = homeTeam;
+          this.homeUser = this.draftdb.getUserByAbbr(homeTeam.abbr);
+        }
       } else if (this.home.name[0] === 'W') {
         const gameIndex = Number(this.home.name.substring(1)) - 1;
-        if (gameIndex < games.length && games[gameIndex].complete) {
-          this.home = games[gameIndex].winner();
-          this.homeUser = this.draftdb.getUserByAbbr(this.home.abbr);
+        if (gameIndex < results.length) {
+          homeTeamAbbr = results[gameIndex].winnerTeamAbbr;
+          if (write) {
+            this.home = this.teamdb.get(homeTeamAbbr);
+            this.homeUser = this.draftdb.getUserByAbbr(homeTeamAbbr);
+          }
         }
       }
     }
@@ -288,13 +379,20 @@ export class Game implements IGame {
         const groupRank = Number(this.away.name[0]) - 1;
         const group = this.away.name[1];
 
-        this.away = teamGroups[group][groupRank];
-        this.awayUser = this.draftdb.getUserByAbbr(this.away.abbr);
+        const awayTeam = teamGroups[group][groupRank];
+        awayTeamAbbr = awayTeam.abbr;
+        if (write) {
+          this.away = awayTeam;
+          this.awayUser = this.draftdb.getUserByAbbr(awayTeam.abbr);
+        }
       } else if (this.away.name[0] === 'W') {
         const gameIndex = Number(this.away.name.substring(1)) - 1;
-        if (gameIndex < games.length && games[gameIndex].complete) {
-          this.away = games[gameIndex].winner();
-          this.awayUser = this.draftdb.getUserByAbbr(this.away.abbr);
+        if (gameIndex < results.length) {
+          awayTeamAbbr = results[gameIndex].winnerTeamAbbr;
+          if (write) {
+            this.away = this.teamdb.get(awayTeamAbbr);
+            this.awayUser = this.draftdb.getUserByAbbr(this.away.abbr);
+          }
         }
       }
     }
@@ -333,6 +431,20 @@ export class Game implements IGame {
 
     this.home.registerGame(this);
     this.away.registerGame(this);
+
+    // return {
+    //   homeTeamAbbr: this.home.abbr,
+    //   awayTeamAbbr: this.away.abbr,
+    //   winnerTeamAbbr: this.winner(abstract){
+
+    //   });
+    //   homeScore: homeScore,
+    //   awayScore: awayScore,
+    //   homePenaltyScore: homePenaltyScore,
+    //   awayPenaltyScore: awayPenaltyScore,
+    //   homePoints: homePoints,
+    //   awayPoints: awayPoints
+    // };
   }
 
   includesTeam(team: ITeam): boolean {
