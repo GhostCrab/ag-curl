@@ -32,39 +32,39 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.draftdb.mockDraft();
+    this.draftdb.mockDraft();
     this.allGamesSub$ = new BehaviorSubject(new Array<IGame>());
     this.allGames$ = this.allGamesSub$.asObservable();
 
     this.allDrafts$ = from([this.draftdb.drafts]);
 
     this.updateGames().then((games) => {
-      // games.sort((a, b) => a.id - b.id);
-      // games.filter(game => game.round === 0).forEach(game => {
-      //   if (!game.complete) {
-      //     game.simulate(games);
-      //   }
-      // })
+      games.sort((a, b) => a.id - b.id);
+      games.filter(game => game.round === 0).forEach(game => {
+        if (!game.complete) {
+          game.simulate(games);
+        }
+      })
 
-      // const teamGroups = this.teamdb.teamsByGroup();
-      // for (let key of Object.keys(teamGroups)) {
-      //   teamGroups[key] = teamGroups[key].sort((a, b) => a.rrSort(b));
-      // }
+      const teamGroups = this.teamdb.teamsByGroup();
+      for (let key of Object.keys(teamGroups)) {
+        teamGroups[key] = teamGroups[key].sort((a, b) => a.rrSort(b));
+      }
 
-      // console.log(teamGroups);
+      console.log(teamGroups);
 
-      // games.filter(game => game.round > 0).forEach(game => {
-      //   game.simulate(games, teamGroups);
-      // })
+      games.filter(game => game.round > 0).forEach(game => {
+        game.simulate(games, teamGroups);
+      })
       
       this.allGamesSub$.next(games.filter(game => game.round >= 0));
     });
 
-    this.updateInterval = setInterval(() => {
-      this.updateGames().then((games) => {
-        this.allGamesSub$.next(games.filter(game => game.round >= 0));
-      });
-    }, 20000);
+    // this.updateInterval = setInterval(() => {
+    //   this.updateGames().then((games) => {
+    //     this.allGamesSub$.next(games.filter(game => game.round >= 0));
+    //   });
+    // }, 20000);
   }
 
   updateGames(): Promise<IGame[]> {
