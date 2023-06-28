@@ -1,7 +1,8 @@
 import { gaussianRandom } from '../app.util';
 import { DraftDatabaseService } from '../core/services/draft-database.service';
-import { TeamDatabaseService } from '../core/services/team-database.service';
+import { TeamDatabaseService, TeamGroupDict, TeamGroupsRanked } from '../core/services/team-database.service';
 import { FIFADataResult } from './fifa-api.interface';
+import { IGameSimulationResult } from './simulation.interface';
 import { ITeam } from './team.interface';
 import { IUser } from './user.interface';
 
@@ -25,38 +26,16 @@ export interface IGame {
   miniStatusTop(): string;
   miniStatusBottom(): string;
   tie(): boolean;
-  winner(abstract?: IAbstractScore): ITeam;
-  winnerAbbr(abstract?: IAbstractScore): string;
+  winner(abstract?: IGameSimulationResult): ITeam;
+  winnerAbbr(abstract?: IGameSimulationResult): string;
+  winnerLogOdds(abstract?: IGameSimulationResult): number;
   getScore(abbr: string): number;
   gameStr(): string;
   roundStr(): string;
-  simulate(results: ISimulationResult[], teamGroups?: { [key: string]: ITeam[]; }): ISimulationResult;
+  simulate(write: boolean, results: IGameSimulationResult[], teamGroups?: TeamGroupsRanked): IGameSimulationResult;
   includesTeam(team: ITeam): boolean;
   compare(game: IGame): boolean;
   initalizeFromResult(): void;
-}
-
-interface IAbstractScore {
-  homeTeamAbbr: string;
-  awayTeamAbbr: string;
-  homeScore: number;
-  awayScore: number;
-  homePenaltyScore: number;
-  awayPenaltyScore: number;
-}
-
-export interface ISimulationResult {
-  homeTeamAbbr: string;
-  awayTeamAbbr: string;
-  winnerTeamAbbr: string;
-  homeLogOdds: number;
-  awayLogOdds: number;
-  homeScore: number;
-  awayScore: number;
-  homePenaltyScore: number;
-  awayPenaltyScore: number;
-  homePoints: number;
-  awayPoints: number;
 }
 
 export class Game implements IGame {
@@ -110,11 +89,6 @@ export class Game implements IGame {
       else if (this.result.StageName[0].Description === 'Semi-final') this.round = 3;
       else if (this.result.StageName[0].Description === 'Final') this.round = 4;
       else this.round = -1; // play-off for 3rd
-    }
-
-    if (this.complete) {
-      this.home.registerGame(this);
-      this.away.registerGame(this);
     }
   }
 
@@ -219,7 +193,7 @@ export class Game implements IGame {
     return '';
   }
 
-  public tie(abstract?: IAbstractScore): boolean {
+  public tie(abstract?: IGameSimulationResult): boolean {
     const homeScore = abstract ? abstract.homeScore : this.homeScore;
     const awayScore = abstract ? abstract.awayScore : this.awayScore;
 
@@ -232,7 +206,7 @@ export class Game implements IGame {
     throw Error('Attempted to get winner from incomplete game');
   }
 
-  public winner(abstract?: IAbstractScore): ITeam {
+  public winner(abstract?: IGameSimulationResult): ITeam {
     if (this.complete || abstract) {
       
       const home = abstract ? this.teamdb.get(abstract.homeTeamAbbr) : this.home;
@@ -257,7 +231,7 @@ export class Game implements IGame {
     throw Error('Attempted to get winner from incomplete game');
   }
 
-  public winnerAbbr(abstract?: IAbstractScore): string {
+  public winnerAbbr(abstract?: IGameSimulationResult): string {
     if (this.complete || abstract) {
       
       const homeTeamAbbr = abstract ? abstract.homeTeamAbbr : this.home.abbr;
@@ -282,7 +256,32 @@ export class Game implements IGame {
     throw Error('Attempted to get winner from incomplete game');
   }
 
-  public getScore(abbr: string, abstract?: IAbstractScore): number {
+  public winnerLogOdds(abstract?: IGameSimulationResult): number {
+    if (this.complete || abstract) {
+      
+      const homeLogOdds = abstract ? abstract.homeLogOdds : this.home.logOdds;
+      const awayLogOdds = abstract ? abstract.awayLogOdds : this.away.logOdds;
+      const homeScore = abstract ? abstract.homeScore : this.homeScore;
+      const awayScore = abstract ? abstract.awayScore : this.awayScore;
+      const homePenaltyScore = abstract ? abstract.homePenaltyScore : this.homePenaltyScore;
+      const awayPenaltyScore = abstract ? abstract.awayPenaltyScore : this.awayPenaltyScore;
+
+      // if (!this.knockout && homeScore === awayScore)
+      //   throw Error('Game ended in a tie');
+
+      if (homeScore === awayScore) {
+        if (homePenaltyScore > awayPenaltyScore) return homeLogOdds;
+        return awayLogOdds;
+      }
+
+      if (homeScore > awayScore) return homeLogOdds;
+      return awayLogOdds;
+    }
+
+    throw Error('Attempted to get winner from incomplete game');
+  }
+
+  public getScore(abbr: string, abstract?: IGameSimulationResult): number {
     if (!this.complete && !abstract) return 0;
 
     if (this.round === -1) // playoff for 3rd doesnt count for points
@@ -322,7 +321,7 @@ export class Game implements IGame {
     }),`;
   }
 
-  simulate(write: boolean, results: ISimulationResult[], teamGroups?: { [key: string]: ITeam[]; }): ISimulationResult {
+  simulate(write: boolean, results: IGameSimulationResult[], teamGroups?: TeamGroupsRanked): IGameSimulationResult {
     if (this.complete) 
       return {
         homeTeamAbbr: this.home.abbr,
@@ -335,42 +334,46 @@ export class Game implements IGame {
         homePenaltyScore: this.homePenaltyScore,
         awayPenaltyScore: this.awayPenaltyScore,
         homePoints: this.getScore(this.home.abbr),
-        awayPoints: this.getScore(this.away.abbr)
+        awayPoints: this.getScore(this.away.abbr),
+        round: this.round,
+        group: this.home.group
       };
 
-    let homeTeamAbbr = this.home.abbr;
-    let awayTeamAbbr = this.away.abbr;
-    let winnerTeamAbbr = this.away.abbr;
-    let homeLogOdds = this.home.logOdds;
-    let awayLogOdds = this.away.logOdds;
-    let homeScore = 0;
-    let awayScore = 0;
-    let homePenaltyScore = 0;
-    let awayPenaltyScore = 0;
-    let homePoints = 0;
-    let awayPoints = 0;
-    
+    let result: IGameSimulationResult = {
+      homeTeamAbbr: this.home.abbr,
+      awayTeamAbbr: this.away.abbr,
+      winnerTeamAbbr: '',
+      homeLogOdds: this.home.logOdds,
+      awayLogOdds: this.away.logOdds,
+      homeScore: 0,
+      awayScore: 0,
+      homePenaltyScore: 0,
+      awayPenaltyScore: 0,
+      homePoints: 0,
+      awayPoints: 0,
+      round: this.round
+    };
+
+    if (this.round === 0)
+      result.group = this.home.group;
+
     if (this.home.rank === 0) {
       if (this.round === 1 && teamGroups) {
         const groupRank = Number(this.home.name[0]) - 1;
         const group = this.home.name[1];
 
-        const homeTeam = teamGroups[group][groupRank];
-        homeTeamAbbr = homeTeam.abbr;
-        homeLogOdds = homeTeam.logOdds;
-        if (write) {
-          this.home = homeTeam;
-          this.homeUser = this.draftdb.getUserByAbbr(homeTeam.abbr);
-        }
+        result.homeTeamAbbr = teamGroups[group][groupRank].abbr;
+        result.homeLogOdds = teamGroups[group][groupRank].logOdds;
       } else if (this.home.name[0] === 'W') {
         const gameIndex = Number(this.home.name.substring(1)) - 1;
-        if (gameIndex < results.length) {
-          homeTeamAbbr = results[gameIndex].winnerTeamAbbr;
-          if (write) {
-            this.home = this.teamdb.get(homeTeamAbbr);
-            this.homeUser = this.draftdb.getUserByAbbr(homeTeamAbbr);
-          }
-        }
+
+        result.homeTeamAbbr = this.winnerAbbr(results[gameIndex]);
+        result.homeLogOdds = this.winnerLogOdds(results[gameIndex]);
+      }
+
+      if (write) {
+        this.home = this.teamdb.get(result.homeTeamAbbr);
+        this.homeUser = this.draftdb.getUserByAbbr(result.homeTeamAbbr);
       }
     }
 
@@ -379,72 +382,71 @@ export class Game implements IGame {
         const groupRank = Number(this.away.name[0]) - 1;
         const group = this.away.name[1];
 
-        const awayTeam = teamGroups[group][groupRank];
-        awayTeamAbbr = awayTeam.abbr;
-        if (write) {
-          this.away = awayTeam;
-          this.awayUser = this.draftdb.getUserByAbbr(awayTeam.abbr);
-        }
+        result.awayTeamAbbr = teamGroups[group][groupRank].abbr;
+        result.awayLogOdds = teamGroups[group][groupRank].logOdds;
       } else if (this.away.name[0] === 'W') {
         const gameIndex = Number(this.away.name.substring(1)) - 1;
-        if (gameIndex < results.length) {
-          awayTeamAbbr = results[gameIndex].winnerTeamAbbr;
-          if (write) {
-            this.away = this.teamdb.get(awayTeamAbbr);
-            this.awayUser = this.draftdb.getUserByAbbr(this.away.abbr);
-          }
-        }
+
+        result.awayTeamAbbr = this.winnerAbbr(results[gameIndex]);
+        result.awayLogOdds = this.winnerLogOdds(results[gameIndex]);
+      }
+
+      if (write) {
+        this.away = this.teamdb.get(result.awayTeamAbbr);
+        this.awayUser = this.draftdb.getUserByAbbr(result.awayTeamAbbr);
       }
     }
 
     let homeBonus = 0;
     let awayBonus = 0;
-    if (this.home.logOdds > this.away.logOdds) {
-      awayBonus = this.home.logOdds - this.away.logOdds;
+    if (result.homeLogOdds > result.awayLogOdds) {
+      awayBonus = result.homeLogOdds - result.awayLogOdds;
     } else {
-      homeBonus = this.away.logOdds - this.home.logOdds;
-    }
-    this.homeScore = gaussianRandom(.5, 1) + homeBonus;
-    this.awayScore = gaussianRandom(.5, 1) + awayBonus;
-
-    if (this.homeScore < 0) {
-      this.awayScore -= this.homeScore;
-      this.homeScore = 0;
+      homeBonus = result.awayLogOdds - result.homeLogOdds;
     }
 
-    if (this.awayScore < 0) {
-      this.homeScore -= this.awayScore;
-      this.awayScore = 0;
+    result.homeScore = gaussianRandom(.5, 1) + homeBonus;
+    result.awayScore = gaussianRandom(.5, 1) + awayBonus;
+    
+    if (result.homeScore < 0) {
+      result.awayScore -= result.homeScore;
+      result.homeScore = 0;
     }
-    this.homeScore = Math.round(this.homeScore);
-    this.awayScore = Math.round(this.awayScore);
 
-    if (this.homeScore === this.awayScore && this.knockout) {
-      while (this.homePenaltyScore === this.awayPenaltyScore) {
-        this.homePenaltyScore = Math.round(Math.random() * 5)
-        this.awayPenaltyScore = Math.round(Math.random() * 5)
+    if (result.awayScore < 0) {
+      result.homeScore -= result.awayScore;
+      result.awayScore = 0;
+    }
+    result.homeScore = Math.round(result.homeScore);
+    result.awayScore = Math.round(result.awayScore);
+
+    if (write) {
+      this.homeScore = result.homeScore;
+      this.awayScore = result.awayScore;
+    }
+
+    if (result.homeScore === result.awayScore && this.knockout) {
+      while (result.homePenaltyScore === result.awayPenaltyScore) {
+        result.homePenaltyScore = Math.round(Math.random() * 5)
+        result.awayPenaltyScore = Math.round(Math.random() * 5)
+      }
+
+      if (write) {
+        this.homePenaltyScore = result.homePenaltyScore;
+        this.awayPenaltyScore = result.awayPenaltyScore;
       }
     }
 
-    this.active = false;
-    this.complete = true;
+    result.homePoints = this.getScore(this.home.abbr, result);
+    result.awayPoints = this.getScore(this.away.abbr, result);
+    result.winnerTeamAbbr = this.winnerAbbr(result);
 
-    this.home.registerGame(this);
-    this.away.registerGame(this);
+    if (write) {
+      this.active = false;
+      this.complete = true;
+    }
 
-    // return {
-    //   homeTeamAbbr: this.home.abbr,
-    //   awayTeamAbbr: this.away.abbr,
-    //   winnerTeamAbbr: this.winner(abstract){
-
-    //   });
-    //   homeScore: homeScore,
-    //   awayScore: awayScore,
-    //   homePenaltyScore: homePenaltyScore,
-    //   awayPenaltyScore: awayPenaltyScore,
-    //   homePoints: homePoints,
-    //   awayPoints: awayPoints
-    // };
+    return result;
   }
 
   includesTeam(team: ITeam): boolean {

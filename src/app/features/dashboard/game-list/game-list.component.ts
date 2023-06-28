@@ -21,7 +21,6 @@ export class GameListComponent implements OnInit {
 
   ngOnInit(): void {
     this.games$.subscribe((data) => {
-      console.log(data);
       if (this.games.length === 0) {
         this.games = data;
       }
