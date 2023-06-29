@@ -87,19 +87,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.allGamesSub$.next(games.filter(game => game.round >= 0));
 
       let metaResult = TournamentSimulationResult.blank(this.teamdb);
-      const iterations = 100;
+      const iterations = 1;
       for (let i = 0; i < iterations; i++) {
         const simulations: IGameSimulationResult[] = [];
         games.filter(game => game.round === 0).forEach(game => {
           if (!game.complete) {
-            simulations.push(game.simulate(false, simulations));
+            simulations.push(game.simulate(true, simulations));
           }
         })
 
         const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());;
 
         games.filter(game => game.round > 0).forEach(game => {
-          simulations.push(game.simulate(false, simulations, teamGroupsRanked));
+          simulations.push(game.simulate(true, simulations, teamGroupsRanked));
         })
 
         metaResult.add(new TournamentSimulationResult(simulations));
