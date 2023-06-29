@@ -51,7 +51,7 @@ export class Team {
     registerGame(game: IGame): void {
       this.games.push(game);
       if (game.complete) {
-        const score = game.getScore(this.abbr);
+        const score = game.getAwardedPoints(this.abbr);
         this.totalScore += score;
         if (!game.knockout) {
           this.rrScore += score;

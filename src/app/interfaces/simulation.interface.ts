@@ -8,12 +8,12 @@ export interface IGameSimulationResult {
   winnerTeamAbbr: string;
   homeLogOdds: number;
   awayLogOdds: number;
-  homeScore: number;
-  awayScore: number;
-  homePenaltyScore: number;
-  awayPenaltyScore: number;
-  homePoints: number;
-  awayPoints: number;
+  homeGoals: number;
+  awayGoals: number;
+  homePenaltyGoals: number;
+  awayPenaltyGoals: number;
+  homeAwardedPoints: number;
+  awayAwardedPoints: number;
   round: number;
   group?: string;
 }
@@ -34,9 +34,9 @@ export class TournamentSimulationResult implements ITournamentSimulationResult {
       if(!(sim.homeTeamAbbr in this.teamData)) this.teamData[sim.homeTeamAbbr] = {score: 0, round: 0};
       if(!(sim.awayTeamAbbr in this.teamData)) this.teamData[sim.awayTeamAbbr] = {score: 0, round: 0};
 
-      this.teamData[sim.homeTeamAbbr].score += sim.homeScore;
+      this.teamData[sim.homeTeamAbbr].score += sim.homeAwardedPoints;
       this.teamData[sim.homeTeamAbbr].round = Math.max(this.teamData[sim.homeTeamAbbr].round, sim.round);
-      this.teamData[sim.awayTeamAbbr].score += sim.awayScore;
+      this.teamData[sim.awayTeamAbbr].score += sim.awayAwardedPoints;
       this.teamData[sim.awayTeamAbbr].round = Math.max(this.teamData[sim.awayTeamAbbr].round, sim.round);
     })
   }

@@ -3,7 +3,7 @@ import { BehaviorSubject, from, lastValueFrom, Observable, of } from 'rxjs';
 import { DraftDatabaseService } from 'src/app/core/services/draft-database.service';
 
 import { FIFAApiService } from 'src/app/core/services/fifa-api.service';
-import { TeamDatabaseService, TeamGroupDict, TeamGroupsRanked } from 'src/app/core/services/team-database.service';
+import { TeamDatabaseService, TeamGroupDict, TeamGroupInfoData, TeamGroupsRanked } from 'src/app/core/services/team-database.service';
 import { IDraft } from 'src/app/interfaces/draft.interface';
 import { IGame } from 'src/app/interfaces/game.interface';
 import { IGameSimulationResult, ITournamentSimulationResult, TournamentSimulationResult } from 'src/app/interfaces/simulation.interface';
@@ -11,10 +11,10 @@ import { IGameSimulationResult, ITournamentSimulationResult, TournamentSimulatio
 function rankTeams(simulations: IGameSimulationResult[], teamGroups: TeamGroupDict): TeamGroupsRanked {
   simulations.forEach( s => {
     if (s.group) {
-      teamGroups[s.group][s.homeTeamAbbr].score += s.homeScore;
+      teamGroups[s.group][s.homeTeamAbbr].score += s.homeAwardedPoints;
       teamGroups[s.group][s.homeTeamAbbr].simulations.push(s);
 
-      teamGroups[s.group][s.awayTeamAbbr].score += s.awayScore;
+      teamGroups[s.group][s.awayTeamAbbr].score += s.homeAwardedPoints;
       teamGroups[s.group][s.awayTeamAbbr].simulations.push(s);
     }
   });
@@ -26,8 +26,8 @@ function rankTeams(simulations: IGameSimulationResult[], teamGroups: TeamGroupDi
       result[group].push({abbr: abbr, logOdds: data.logOdds});
     }
     result[group].sort( (a, b) => {
-      const aInfo = info[a.abbr];
-      const bInfo = info[b.abbr];
+      const aInfo: TeamGroupInfoData = info[a.abbr];
+      const bInfo: TeamGroupInfoData = info[b.abbr];
 
       if (aInfo.score === bInfo.score) {
         const vsGames = aInfo.simulations.filter( sim => sim.homeTeamAbbr === b.abbr || sim.awayTeamAbbr === b.abbr );
@@ -35,7 +35,7 @@ function rankTeams(simulations: IGameSimulationResult[], teamGroups: TeamGroupDi
           return Math.random() - 0.5;
 
         const sim = vsGames[0];
-        if (sim.homePoints === sim.awayPoints)
+        if (sim.homeAwardedPoints === sim.awayAwardedPoints)
           return Math.random() - 0.5;
 
         if (sim.winnerTeamAbbr === a.abbr)
@@ -84,28 +84,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.updateGames().then((games) => {
       games.sort((a, b) => a.id - b.id);
-      this.allGamesSub$.next(games.filter(game => game.round >= 0));
-
+      
       let metaResult = TournamentSimulationResult.blank(this.teamdb);
-      const iterations = 1;
+      const iterations = 50000;
       for (let i = 0; i < iterations; i++) {
         const simulations: IGameSimulationResult[] = [];
         games.filter(game => game.round === 0).forEach(game => {
           if (!game.complete) {
-            simulations.push(game.simulate(true, simulations));
+            simulations.push(game.simulate(i === iterations - 1, simulations));
           }
         })
 
         const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());;
 
         games.filter(game => game.round > 0).forEach(game => {
-          simulations.push(game.simulate(true, simulations, teamGroupsRanked));
+          simulations.push(game.simulate(i === iterations - 1, simulations, teamGroupsRanked));
         })
 
         metaResult.add(new TournamentSimulationResult(simulations));
       }
 
-      console.log(metaResult.divide(iterations).raw());
+      metaResult.divide(iterations).raw().forEach(a => console.log(`${a.abbr}: ${a.score.toFixed(3)} ${a.round.toFixed(2)}`));
+
+      this.allGamesSub$.next(games.filter(game => game.round >= 0));
     });
 
     // this.updateInterval = setInterval(() => {

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { IGameSimulationResult } from 'src/app/interfaces/simulation.interface';
 import { ITeam, Team } from 'src/app/interfaces/team.interface';
 
-export interface TeamGroupInfo { [key: string]: {logOdds: number, score: number, simulations: IGameSimulationResult[]} };
+export interface TeamGroupInfoData { logOdds: number, score: number, simulations: IGameSimulationResult[] }
+export interface TeamGroupInfo { [key: string]: TeamGroupInfoData };
 export interface TeamGroupDict { [key: string]: TeamGroupInfo };
 export interface TeamGroupsRanked { [key: string]: {abbr: string, logOdds: number}[] };
 

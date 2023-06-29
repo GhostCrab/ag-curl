@@ -60,10 +60,10 @@ export class ScoreListComponent implements OnInit {
             for (const team of draft.teams) {
                 for (const game of this.games.filter(a => a.home.abbr === team.abbr || a.away.abbr === team.abbr)) {
                     if (game.complete) completedGames++;
-                    let addScore = game.getScore(team.abbr);
+                    let addScore = game.getAwardedPoints(team.abbr);
 
                     if (addScore > 0) {
-                        score += game.getScore(team.abbr);
+                        score += game.getAwardedPoints(team.abbr);
                     }
 
                     if (addScore > 1) {
