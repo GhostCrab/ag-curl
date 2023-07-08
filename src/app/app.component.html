@@ -1,14 +1,5 @@
 <!-- <nav-bar class="nav-bar"></nav-bar> -->
 <div class="app-content">
   <div class="title">{{ title }}</div>
-  <div class="form-input">
-    <input
-      type="number"
-      [(ngModel)]="factorialInput"
-      (change)="calculateFactorialMany()"
-    />
-  </div>
-  <div class="factorial-response">The response is {{ factorialResult }}</div>
-  <div class="factorial-response">Calculation took {{ testTimer }}ms</div>
   <router-outlet></router-outlet>
 </div>

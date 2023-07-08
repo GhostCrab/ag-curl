@@ -71,7 +71,7 @@ export class DraftDatabaseService {
       }
 
       const splicePos = Math.min(
-        Math.floor(Math.abs(gaussianRandom(0, 1.75))),
+        Math.floor(Math.abs(gaussianRandom(0, .5))),
         teams.length - 1
       );
 

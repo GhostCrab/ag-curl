@@ -4,6 +4,7 @@ import { DraftDatabaseService } from 'src/app/core/services/draft-database.servi
 
 import { FIFAApiService } from 'src/app/core/services/fifa-api.service';
 import { TeamDatabaseService, TeamGroupDict, TeamGroupInfoData, TeamGroupsRanked } from 'src/app/core/services/team-database.service';
+import { UserDatabaseService } from 'src/app/core/services/user-database.service';
 import { IDraft } from 'src/app/interfaces/draft.interface';
 import { IGame } from 'src/app/interfaces/game.interface';
 import { IGameSimulationResult, ITournamentSimulationResult, TournamentSimulationResult } from 'src/app/interfaces/simulation.interface';
@@ -67,6 +68,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(
     private readonly fifaapi: FIFAApiService,
     private readonly teamdb: TeamDatabaseService,
+    private readonly userdb: UserDatabaseService,
     private readonly draftdb: DraftDatabaseService
   ) {}
 
@@ -76,44 +78,60 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.draftdb.mockDraft();
     this.allGamesSub$ = new BehaviorSubject(new Array<IGame>());
     this.allGames$ = this.allGamesSub$.asObservable();
 
     this.allDrafts$ = from([this.draftdb.drafts]);
 
-    this.updateGames().then((games) => {
-      games.sort((a, b) => a.id - b.id);
+    // this.updateGames().then((games) => {
+    //   games.sort((a, b) => a.id - b.id);
       
-      let metaResult = TournamentSimulationResult.blank(this.teamdb);
-      const iterations = 50000;
-      for (let i = 0; i < iterations; i++) {
-        const simulations: IGameSimulationResult[] = [];
-        games.filter(game => game.round === 0).forEach(game => {
-          if (!game.complete) {
-            simulations.push(game.simulate(i === iterations - 1, simulations));
-          }
-        })
+    //   let metaResult = TournamentSimulationResult.blank(this.teamdb);
+    //   let metaDraft: { [key: string]: number[] } = {};
 
-        const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());;
+    //   this.userdb.all().forEach(user => {
+    //     metaDraft[user.full()] = [0,0,0,0,0,0,0,0];
+    //   })
 
-        games.filter(game => game.round > 0).forEach(game => {
-          simulations.push(game.simulate(i === iterations - 1, simulations, teamGroupsRanked));
-        })
+    //   const iterations = 2;
+    //   for (let i = 0; i < iterations; i++) {
+    //     this.draftdb.mockDraft();
+    //     const simulations: IGameSimulationResult[] = [];
+    //     games.forEach(game => game.initalizeFromResult());
+    //     this.teamdb.all().forEach(team=>team.resetGames());
 
-        metaResult.add(new TournamentSimulationResult(simulations));
-      }
+    //     games.filter(game => game.round === 0).forEach(game => {
+    //       if (!game.complete) {
+    //         simulations.push(game.simulate(true, simulations));
+    //       }
+    //     })
 
-      metaResult.divide(iterations).raw().forEach(a => console.log(`${a.abbr}: ${a.score.toFixed(3)} ${a.round.toFixed(2)}`));
+    //     const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());;
 
+    //     games.filter(game => game.round > 0).forEach(game => {
+    //       simulations.push(game.simulate(true, simulations, teamGroupsRanked));
+    //     })
+
+    //     metaResult.add(new TournamentSimulationResult(simulations));
+    //     const drafts = this.draftdb.drafts.sort((a, b) => b.score() - a.score());
+    //     drafts.forEach((draft, index) => metaDraft[draft.user.full()][index]++);
+    //   }
+
+    //   metaResult.divide(iterations).raw().forEach(a => console.log(`${a.abbr}: ${a.score.toFixed(3)} ${a.round.toFixed(2)}`));
+    //   console.log(metaDraft);
+
+    //   this.allGamesSub$.next(games.filter(game => game.round >= 0));
+    // });
+
+    this.updateGames().then((games) => {
       this.allGamesSub$.next(games.filter(game => game.round >= 0));
     });
 
-    // this.updateInterval = setInterval(() => {
-    //   this.updateGames().then((games) => {
-    //     this.allGamesSub$.next(games.filter(game => game.round >= 0));
-    //   });
-    // }, 20000);
+    this.updateInterval = setInterval(() => {
+      this.updateGames().then((games) => {
+        this.allGamesSub$.next(games.filter(game => game.round >= 0));
+      });
+    }, 20000);
   }
 
   updateGames(): Promise<IGame[]> {
