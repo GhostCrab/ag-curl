@@ -90,10 +90,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       let metaDraft: { [key: string]: number[] } = {};
 
       this.userdb.all().forEach(user => {
-        metaDraft[user.full()] = [0,0,0,0,0,0,0,0];
+        metaDraft[user.name] = [0,0,0,0,0,0,0,0];
       })
 
-      const iterations = 100000;
+      const iterations = 10000;
       for (let i = 0; i < iterations; i++) {
         this.draftdb.mockDraft();
         const simulations: IGameSimulationResult[] = [];
@@ -114,16 +114,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         metaResult.add(new TournamentSimulationResult(simulations));
         const drafts = this.draftdb.drafts.sort((a, b) => b.score() - a.score());
-        drafts.forEach((draft, index) => metaDraft[draft.user.full()][index]++);
+        drafts.forEach((draft, index) => metaDraft[draft.user.name][index]++);
       }
 
       metaResult.divide(iterations).raw().forEach(a => console.log(`${a.abbr}: ${a.score.toFixed(3)} ${a.round.toFixed(2)}`));
+
+      const metaDraftSorted: (string | number)[][] = [];
       for (const [key, value] of Object.entries(metaDraft)) {
-        if (key === 'TJ')
-            console.log(`${key}: \t\t${(value[0]/1000).toFixed(2)}%`)
-        else
-            console.log(`${key}: \t${(value[0]/1000).toFixed(2)}%`)
+        metaDraftSorted.push([key, value[0]/(iterations/100)]);
       }
+      metaDraftSorted.sort((a, b) => Number(b[1]) - Number(a[1]));
+
+      metaDraftSorted.forEach(data => console.log(`${String(data[0]).padStart(6)}: ${String(Number(data[1]).toFixed(2)).padStart(5)}%`))
+
+      // for (const [key, value] of Object.entries(metaDraft)) {
+      //   console.log(`${key.padStart(6)}: ${String((value[0]/(iterations/100)).toFixed(2)).padStart(5)}%`)
+      // }
 
       this.allGamesSub$.next(games.filter(game => game.round >= 0));
     });
