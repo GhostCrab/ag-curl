@@ -83,55 +83,60 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.allDrafts$ = from([this.draftdb.drafts]);
 
-    // this.updateGames().then((games) => {
-    //   games.sort((a, b) => a.id - b.id);
-      
-    //   let metaResult = TournamentSimulationResult.blank(this.teamdb);
-    //   let metaDraft: { [key: string]: number[] } = {};
-
-    //   this.userdb.all().forEach(user => {
-    //     metaDraft[user.full()] = [0,0,0,0,0,0,0,0];
-    //   })
-
-    //   const iterations = 2;
-    //   for (let i = 0; i < iterations; i++) {
-    //     this.draftdb.mockDraft();
-    //     const simulations: IGameSimulationResult[] = [];
-    //     games.forEach(game => game.initalizeFromResult());
-    //     this.teamdb.all().forEach(team=>team.resetGames());
-
-    //     games.filter(game => game.round === 0).forEach(game => {
-    //       if (!game.complete) {
-    //         simulations.push(game.simulate(true, simulations));
-    //       }
-    //     })
-
-    //     const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());;
-
-    //     games.filter(game => game.round > 0).forEach(game => {
-    //       simulations.push(game.simulate(true, simulations, teamGroupsRanked));
-    //     })
-
-    //     metaResult.add(new TournamentSimulationResult(simulations));
-    //     const drafts = this.draftdb.drafts.sort((a, b) => b.score() - a.score());
-    //     drafts.forEach((draft, index) => metaDraft[draft.user.full()][index]++);
-    //   }
-
-    //   metaResult.divide(iterations).raw().forEach(a => console.log(`${a.abbr}: ${a.score.toFixed(3)} ${a.round.toFixed(2)}`));
-    //   console.log(metaDraft);
-
-    //   this.allGamesSub$.next(games.filter(game => game.round >= 0));
-    // });
-
     this.updateGames().then((games) => {
+      games.sort((a, b) => a.id - b.id);
+      
+      let metaResult = TournamentSimulationResult.blank(this.teamdb);
+      let metaDraft: { [key: string]: number[] } = {};
+
+      this.userdb.all().forEach(user => {
+        metaDraft[user.full()] = [0,0,0,0,0,0,0,0];
+      })
+
+      const iterations = 100000;
+      for (let i = 0; i < iterations; i++) {
+        this.draftdb.mockDraft();
+        const simulations: IGameSimulationResult[] = [];
+        games.forEach(game => game.initalizeFromResult());
+        this.teamdb.all().forEach(team=>team.resetGames());
+
+        games.filter(game => game.round === 0).forEach(game => {
+          if (!game.complete) {
+            simulations.push(game.simulate(true, simulations));
+          }
+        })
+
+        const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());;
+
+        games.filter(game => game.round > 0).forEach(game => {
+          simulations.push(game.simulate(true, simulations, teamGroupsRanked));
+        })
+
+        metaResult.add(new TournamentSimulationResult(simulations));
+        const drafts = this.draftdb.drafts.sort((a, b) => b.score() - a.score());
+        drafts.forEach((draft, index) => metaDraft[draft.user.full()][index]++);
+      }
+
+      metaResult.divide(iterations).raw().forEach(a => console.log(`${a.abbr}: ${a.score.toFixed(3)} ${a.round.toFixed(2)}`));
+      for (const [key, value] of Object.entries(metaDraft)) {
+        if (key === 'TJ')
+            console.log(`${key}: \t\t${(value[0]/1000).toFixed(2)}%`)
+        else
+            console.log(`${key}: \t${(value[0]/1000).toFixed(2)}%`)
+      }
+
       this.allGamesSub$.next(games.filter(game => game.round >= 0));
     });
 
-    this.updateInterval = setInterval(() => {
-      this.updateGames().then((games) => {
-        this.allGamesSub$.next(games.filter(game => game.round >= 0));
-      });
-    }, 20000);
+    // this.updateGames().then((games) => {
+    //   this.allGamesSub$.next(games.filter(game => game.round >= 0));
+    // });
+
+    // this.updateInterval = setInterval(() => {
+    //   this.updateGames().then((games) => {
+    //     this.allGamesSub$.next(games.filter(game => game.round >= 0));
+    //   });
+    // }, 20000);
   }
 
   updateGames(): Promise<IGame[]> {

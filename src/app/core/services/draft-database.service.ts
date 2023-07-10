@@ -16,15 +16,15 @@ export class DraftDatabaseService {
     private teamdb: TeamDatabaseService
   ) {
     this.drafts = [
-      // new Draft(userdb.get("Player 1"), []),
-      // new Draft(userdb.get("Player 2"), []),
-      // new Draft(userdb.get("Player 3"), []),
-      // new Draft(userdb.get("Player 4"), []),
-      // new Draft(userdb.get("Player 5"), []),
-      // new Draft(userdb.get("Player 6"), []),
+      new Draft(this.userdb.get("Keegan"), [this.teamdb.get('USA'),this.teamdb.get('POR'),this.teamdb.get('COL')]),
+      new Draft(this.userdb.get("Ryan"),   [this.teamdb.get('ESP'),this.teamdb.get('DEN'),this.teamdb.get('KOR')]),
+      new Draft(this.userdb.get("SBrad"),  [this.teamdb.get('ENG'),this.teamdb.get('NZL'),this.teamdb.get('SUI')]),
+      new Draft(this.userdb.get("Andrew"), [this.teamdb.get('FRA'),this.teamdb.get('ITA'),this.teamdb.get('IRL')]),
+      new Draft(this.userdb.get("TJ"),     [this.teamdb.get('GER'),this.teamdb.get('CAN'),this.teamdb.get('ARG')]),
+      new Draft(this.userdb.get("Bardia"), [this.teamdb.get('AUS'),this.teamdb.get('NED')]),
+      new Draft(this.userdb.get("Micah"),  [this.teamdb.get('SWE'),this.teamdb.get('BRA')]),
+      new Draft(this.userdb.get("Cooper"), [this.teamdb.get('JPN'),this.teamdb.get('NOR')]),
     ];
-
-    userdb.all().forEach(user => this.drafts.push(new Draft(user, [])));
   }
 
   public getUserByAbbr(abbr: string): IUser {
@@ -46,17 +46,30 @@ export class DraftDatabaseService {
   }
 
   public mockDraft() {
+    const pickedTeams = ['USA','ESP','ENG','FRA','GER','AUS','SWE','JPN','ITA','CAN','NED','BRA','NOR','NZL','DEN','POR','COL','KOR','SUI','IRL','ARG'];
     const users = this.userdb.all();
     const teams = this.teamdb
       .all()
       .filter((a) => a.rank > 0)
+      .filter((a) => !pickedTeams.includes(a.abbr))
       .sort((a, b) => a.rank - b.rank);
-    let snakes = 0;
-    let draftIndex = 0;
+    let snakes = 1;
+    let draftIndex = 5;
     let draftDirection: 'up' | 'down' = 'up';
 
-    this.drafts = [];
-    users.forEach((user) => this.drafts.push(new Draft(user, [])));
+    // this.drafts = [];
+    // users.forEach((user) => this.drafts.push(new Draft(user, [])));
+
+    this.drafts = [
+        new Draft(this.userdb.get("Keegan"), [this.teamdb.get('USA'),this.teamdb.get('POR'),this.teamdb.get('COL')]),
+        new Draft(this.userdb.get("Ryan"),   [this.teamdb.get('ESP'),this.teamdb.get('DEN'),this.teamdb.get('KOR')]),
+        new Draft(this.userdb.get("SBrad"),  [this.teamdb.get('ENG'),this.teamdb.get('NZL'),this.teamdb.get('SUI')]),
+        new Draft(this.userdb.get("Andrew"), [this.teamdb.get('FRA'),this.teamdb.get('ITA'),this.teamdb.get('IRL')]),
+        new Draft(this.userdb.get("TJ"),     [this.teamdb.get('GER'),this.teamdb.get('CAN'),this.teamdb.get('ARG')]),
+        new Draft(this.userdb.get("Bardia"), [this.teamdb.get('AUS'),this.teamdb.get('NED')]),
+        new Draft(this.userdb.get("Micah"),  [this.teamdb.get('SWE'),this.teamdb.get('BRA')]),
+        new Draft(this.userdb.get("Cooper"), [this.teamdb.get('JPN'),this.teamdb.get('NOR')]),
+      ];
 
     while (teams.length > 0) {
       if (draftIndex >= this.drafts.length) {
