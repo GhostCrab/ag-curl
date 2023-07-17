@@ -67,6 +67,7 @@ export class Game implements IGame {
   }
 
   initalizeFromResult() {
+    console.log(this.result);
     this.id = this.result.MatchNumber;
     this.home = this.teamdb.get(this.result.Home?.Abbreviation ? this.result.Home.Abbreviation : this.result.PlaceHolderA);
     this.away = this.teamdb.get(this.result.Away?.Abbreviation ? this.result.Away.Abbreviation : this.result.PlaceHolderB);
@@ -78,7 +79,7 @@ export class Game implements IGame {
       this.result.AwayTeamPenaltyScore === null ? 0 : this.result.AwayTeamPenaltyScore;
     this.active = this.result.MatchStatus === 3;
     this.complete = this.result.MatchStatus === 0;
-    this.gt = new Date(this.result.LocalDate).getTime() - 10800000;
+    this.gt = new Date(this.result.Date).getTime();
     this.homeUser = this.draftdb.getUserByAbbr(this.home.abbr);
     this.awayUser = this.draftdb.getUserByAbbr(this.away.abbr);
     this.knockout = this.result.StageName[0].Description.toLowerCase() !== 'first stage';
