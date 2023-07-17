@@ -16,14 +16,14 @@ export class DraftDatabaseService {
     private teamdb: TeamDatabaseService
   ) {
     this.drafts = [
-      new Draft(this.userdb.get("Keegan"), [this.teamdb.get('USA'),this.teamdb.get('POR'),this.teamdb.get('COL')]),
-      new Draft(this.userdb.get("Ryan"),   [this.teamdb.get('ESP'),this.teamdb.get('DEN'),this.teamdb.get('KOR')]),
-      new Draft(this.userdb.get("SBrad"),  [this.teamdb.get('ENG'),this.teamdb.get('NZL'),this.teamdb.get('SUI')]),
-      new Draft(this.userdb.get("Andrew"), [this.teamdb.get('FRA'),this.teamdb.get('ITA'),this.teamdb.get('IRL')]),
-      new Draft(this.userdb.get("TJ"),     [this.teamdb.get('GER'),this.teamdb.get('CAN'),this.teamdb.get('ARG')]),
-      new Draft(this.userdb.get("Bardia"), [this.teamdb.get('AUS'),this.teamdb.get('NED')]),
-      new Draft(this.userdb.get("Micah"),  [this.teamdb.get('SWE'),this.teamdb.get('BRA')]),
-      new Draft(this.userdb.get("Cooper"), [this.teamdb.get('JPN'),this.teamdb.get('NOR')]),
+      new Draft(this.userdb.get("Keegan"), [this.teamdb.get('USA'),this.teamdb.get('POR'),this.teamdb.get('COL'),this.teamdb.get('HAI')]),
+      new Draft(this.userdb.get("Ryan"),   [this.teamdb.get('ESP'),this.teamdb.get('DEN'),this.teamdb.get('KOR'),this.teamdb.get('VIE')]),
+      new Draft(this.userdb.get("SBrad"),  [this.teamdb.get('ENG'),this.teamdb.get('NZL'),this.teamdb.get('SUI'),this.teamdb.get('PAN')]),
+      new Draft(this.userdb.get("Andrew"), [this.teamdb.get('FRA'),this.teamdb.get('ITA'),this.teamdb.get('IRL'),this.teamdb.get('PHI')]),
+      new Draft(this.userdb.get("TJ"),     [this.teamdb.get('GER'),this.teamdb.get('CAN'),this.teamdb.get('ARG'),this.teamdb.get('MAR')]),
+      new Draft(this.userdb.get("Bardia"), [this.teamdb.get('AUS'),this.teamdb.get('NED'),this.teamdb.get('CHN'),this.teamdb.get('ZAM')]),
+      new Draft(this.userdb.get("Micah"),  [this.teamdb.get('SWE'),this.teamdb.get('BRA'),this.teamdb.get('JAM'),this.teamdb.get('CRC')]),
+      new Draft(this.userdb.get("Cooper"), [this.teamdb.get('JPN'),this.teamdb.get('NOR'),this.teamdb.get('NGA'),this.teamdb.get('RSA')]),
     ];
   }
 
@@ -46,29 +46,29 @@ export class DraftDatabaseService {
   }
 
   public mockDraft() {
-    const pickedTeams = ['USA','ESP','ENG','FRA','GER','AUS','SWE','JPN','ITA','CAN','NED','BRA','NOR','NZL','DEN','POR','COL','KOR','SUI','IRL','ARG'];
+    const pickedTeams: string[] = [];
     const users = this.userdb.all();
     const teams = this.teamdb
       .all()
       .filter((a) => a.rank > 0)
       .filter((a) => !pickedTeams.includes(a.abbr))
       .sort((a, b) => a.rank - b.rank);
-    let snakes = 1;
-    let draftIndex = 5;
+    let snakes = 0;
+    let draftIndex = 0;
     let draftDirection: 'up' | 'down' = 'up';
 
     // this.drafts = [];
     // users.forEach((user) => this.drafts.push(new Draft(user, [])));
 
     this.drafts = [
-        new Draft(this.userdb.get("Keegan"), [this.teamdb.get('USA'),this.teamdb.get('POR'),this.teamdb.get('COL')]),
-        new Draft(this.userdb.get("Ryan"),   [this.teamdb.get('ESP'),this.teamdb.get('DEN'),this.teamdb.get('KOR')]),
-        new Draft(this.userdb.get("SBrad"),  [this.teamdb.get('ENG'),this.teamdb.get('NZL'),this.teamdb.get('SUI')]),
-        new Draft(this.userdb.get("Andrew"), [this.teamdb.get('FRA'),this.teamdb.get('ITA'),this.teamdb.get('IRL')]),
-        new Draft(this.userdb.get("TJ"),     [this.teamdb.get('GER'),this.teamdb.get('CAN'),this.teamdb.get('ARG')]),
-        new Draft(this.userdb.get("Bardia"), [this.teamdb.get('AUS'),this.teamdb.get('NED')]),
-        new Draft(this.userdb.get("Micah"),  [this.teamdb.get('SWE'),this.teamdb.get('BRA')]),
-        new Draft(this.userdb.get("Cooper"), [this.teamdb.get('JPN'),this.teamdb.get('NOR')]),
+        new Draft(this.userdb.get("Keegan"), []),
+        new Draft(this.userdb.get("Ryan"),   []),
+        new Draft(this.userdb.get("SBrad"),  []),
+        new Draft(this.userdb.get("Andrew"), []),
+        new Draft(this.userdb.get("TJ"),     []),
+        new Draft(this.userdb.get("Bardia"), []),
+        new Draft(this.userdb.get("Micah"),  []),
+        new Draft(this.userdb.get("Cooper"), []),
       ];
 
     while (teams.length > 0) {
