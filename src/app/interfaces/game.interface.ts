@@ -67,7 +67,7 @@ export class Game implements IGame {
   }
 
   initalizeFromResult() {
-    console.log(this.result);
+    // console.log(this.result);
     this.id = this.result.MatchNumber;
     this.home = this.teamdb.get(this.result.Home?.Abbreviation ? this.result.Home.Abbreviation : this.result.PlaceHolderA);
     this.away = this.teamdb.get(this.result.Away?.Abbreviation ? this.result.Away.Abbreviation : this.result.PlaceHolderB);

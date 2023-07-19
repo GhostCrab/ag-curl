@@ -1,0 +1,17 @@
+<div *ngIf="iterations !== iterate" class="game-status">Progress ({{ iterations }} Iterations): {{ ((iterate / iterations) * 100).toFixed(0) }}%</div>
+
+<div *ngIf="iterations === iterate"class="list-container">
+  <mat-grid-list cols="2" rowHeight="2em" *ngFor="let draft of metaDraftSorted">
+    <mat-grid-tile colspan="1"><div class="game-status">{{ draft[0] }}</div></mat-grid-tile>
+    <mat-grid-tile colspan="1"><div class="game-status">{{ draft[1] }}%</div></mat-grid-tile>
+  </mat-grid-list>
+</div>
+
+<div *ngIf="iterations === iterate"class="list-container">
+  <mat-grid-list cols="3" rowHeight="2em" *ngFor="let result of metaResult.raw()">
+    <mat-grid-tile colspan="1"><div class="game-status"><img class="team-img" src="{{ teamdb.get(result.abbr).imgURL }}" />{{ teamdb.get(result.abbr).cleanName() }}</div></mat-grid-tile>
+    <mat-grid-tile colspan="1"><div class="game-status">{{ result.score.toFixed(3) }}</div></mat-grid-tile>
+    <mat-grid-tile colspan="1"><div class="game-status">{{ result.round.toFixed(2) }}</div></mat-grid-tile>
+  </mat-grid-list>
+</div>
+
