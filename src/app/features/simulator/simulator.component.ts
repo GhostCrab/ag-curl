@@ -99,16 +99,14 @@ export class SimulatorComponent implements OnInit {
 
       for (this.iterate = 0; this.iterate < this.iterations; this.iterate++) {
         if (this.iterate % 500 === 0)
-          await sleep(2);
-        this.draftdb.mockDraft();
+          await sleep(0);
+        // this.draftdb.mockDraft();
         const simulations: IGameSimulationResult[] = [];
         games.forEach(game => game.initalizeFromResult());
         this.teamdb.all().forEach(team=>team.resetGames());
 
         games.filter(game => game.round === 0).forEach(game => {
-          if (!game.complete) {
-            simulations.push(game.simulate(true, simulations));
-          }
+          simulations.push(game.simulate(true, simulations));
         })
 
         const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());;
