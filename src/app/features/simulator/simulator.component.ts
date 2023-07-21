@@ -70,7 +70,7 @@ export class SimulatorComponent implements OnInit {
   metaDraftSorted: (string | number)[][];
 
   iterate: number = 0;
-  iterations = 50000;
+  iterations = 100;
 
   updateInterval: NodeJS.Timer;
 
@@ -112,12 +112,30 @@ export class SimulatorComponent implements OnInit {
         const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());;
 
         games.filter(game => game.round > 0).forEach(game => {
-          simulations.push(game.simulate(true, simulations, teamGroupsRanked));
+          simulations.push(game.simulate(false, simulations, teamGroupsRanked));
         })
 
-        this.metaResult.add(new TournamentSimulationResult(simulations));
-        const drafts = this.draftdb.drafts.sort((a, b) => b.score() - a.score());
-        drafts.forEach((draft, index) => this.metaDraft[draft.user.name][index]++);
+        const tournamentResult = new TournamentSimulationResult(simulations);
+        this.metaResult.add(tournamentResult);
+
+        const draftarr: (string | number | (string | number)[][])[][] = [];
+        this.draftdb.drafts.forEach(draft => {
+          const draftteams: (string | number)[][] = [];
+          let draftScore = 0;
+          draft.teams.forEach(team => {
+            draftteams.push([team.abbr, tournamentResult.teamData[team.abbr].score])
+            draftScore += tournamentResult.teamData[team.abbr].score;
+          });
+
+          draftarr.push([draft.user.name, draftScore, draftteams]);
+        });
+
+        draftarr.sort((a, b) => Number(b[1]) - Number(a[1]));
+        console.log(draftarr);
+
+        // const drafts = this.draftdb.drafts.sort((a, b) => b.score() - a.score());
+        // drafts.forEach((draft, index) => this.metaDraft[draft.user.name][index]++);
+        draftarr.forEach((draft, index) => this.metaDraft[String(draft[0])][index]++)
       }
 
       this.metaResult.divide(this.iterations);
