@@ -439,9 +439,12 @@ export class Game implements IGame {
       }
     }
 
-    result.homeAwardedPoints = this.getAwardedPoints(this.home.abbr, result);
-    result.awayAwardedPoints = this.getAwardedPoints(this.away.abbr, result);
-    result.winnerTeamAbbr = this.winnerAbbr(result);
+    result.homeAwardedPoints = this.getAwardedPoints(result.homeTeamAbbr, result);
+    result.awayAwardedPoints = this.getAwardedPoints(result.awayTeamAbbr, result);
+    if (this.tie(result))
+        result.winnerTeamAbbr = 'TIE';
+    else
+        result.winnerTeamAbbr = this.winnerAbbr(result);
 
     if (write) {
       this.active = false;

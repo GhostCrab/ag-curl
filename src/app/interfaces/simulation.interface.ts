@@ -1,6 +1,6 @@
 import { TeamDatabaseService } from "../core/services/team-database.service";
 
-export interface TeamData { [key: string]: {score: number, round: number} };
+export interface TeamData { [key: string]: {score: number, round: number, results: IGameSimulationResult[]} };
 
 export interface IGameSimulationResult {
   homeTeamAbbr: string;
@@ -31,13 +31,15 @@ export class TournamentSimulationResult implements ITournamentSimulationResult {
 
   constructor(sims: IGameSimulationResult[]) {
     sims.forEach(sim => {
-      if(!(sim.homeTeamAbbr in this.teamData)) this.teamData[sim.homeTeamAbbr] = {score: 0, round: 0};
-      if(!(sim.awayTeamAbbr in this.teamData)) this.teamData[sim.awayTeamAbbr] = {score: 0, round: 0};
+      if(!(sim.homeTeamAbbr in this.teamData)) this.teamData[sim.homeTeamAbbr] = {score: 0, round: 0, results: []};
+      if(!(sim.awayTeamAbbr in this.teamData)) this.teamData[sim.awayTeamAbbr] = {score: 0, round: 0, results: []};
 
       this.teamData[sim.homeTeamAbbr].score += sim.homeAwardedPoints;
       this.teamData[sim.homeTeamAbbr].round = Math.max(this.teamData[sim.homeTeamAbbr].round, sim.round);
+      this.teamData[sim.homeTeamAbbr].results.push(sim);
       this.teamData[sim.awayTeamAbbr].score += sim.awayAwardedPoints;
       this.teamData[sim.awayTeamAbbr].round = Math.max(this.teamData[sim.awayTeamAbbr].round, sim.round);
+      this.teamData[sim.awayTeamAbbr].results.push(sim);
     })
   }
 
@@ -70,7 +72,7 @@ export class TournamentSimulationResult implements ITournamentSimulationResult {
     const result = new TournamentSimulationResult([]);
     teamdb.all().forEach(team => {
       if (team.rank > 0)
-        result.teamData[team.abbr] = {score: 0, round: 0};
+        result.teamData[team.abbr] = {score: 0, round: 0, results: []};
     })
     return result;
   }

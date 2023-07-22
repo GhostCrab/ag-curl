@@ -17,7 +17,7 @@ function rankTeams(simulations: IGameSimulationResult[], teamGroups: TeamGroupDi
       teamGroups[s.group][s.homeTeamAbbr].score += s.homeAwardedPoints;
       teamGroups[s.group][s.homeTeamAbbr].simulations.push(s);
 
-      teamGroups[s.group][s.awayTeamAbbr].score += s.homeAwardedPoints;
+      teamGroups[s.group][s.awayTeamAbbr].score += s.awayAwardedPoints;
       teamGroups[s.group][s.awayTeamAbbr].simulations.push(s);
     }
   });
@@ -26,7 +26,7 @@ function rankTeams(simulations: IGameSimulationResult[], teamGroups: TeamGroupDi
   for (const [group, info] of Object.entries(teamGroups)) {
     if(!(group in result)) result[group] = [];
     for (const [abbr, data] of Object.entries(info)) {
-      result[group].push({abbr: abbr, logOdds: data.logOdds});
+      result[group].push({abbr: abbr, logOdds: data.logOdds, score: data.score});
     }
     result[group].sort( (a, b) => {
       const aInfo: TeamGroupInfoData = info[a.abbr];
@@ -70,7 +70,7 @@ export class SimulatorComponent implements OnInit {
   metaDraftSorted: (string | number)[][];
 
   iterate: number = 0;
-  iterations = 100;
+  iterations = 50000;
 
   updateInterval: NodeJS.Timer;
 
@@ -109,7 +109,8 @@ export class SimulatorComponent implements OnInit {
           simulations.push(game.simulate(true, simulations));
         })
 
-        const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());;
+        const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());
+        // console.log(teamGroupsRanked);
 
         games.filter(game => game.round > 0).forEach(game => {
           simulations.push(game.simulate(false, simulations, teamGroupsRanked));
@@ -118,12 +119,12 @@ export class SimulatorComponent implements OnInit {
         const tournamentResult = new TournamentSimulationResult(simulations);
         this.metaResult.add(tournamentResult);
 
-        const draftarr: (string | number | (string | number)[][])[][] = [];
+        const draftarr: (string | { score: number; round: number; results: IGameSimulationResult[]; } | number | (string | { score: number; round: number; results: IGameSimulationResult[]; })[][])[][] = [];
         this.draftdb.drafts.forEach(draft => {
-          const draftteams: (string | number)[][] = [];
+          const draftteams: (string | { score: number; round: number; results: IGameSimulationResult[]; })[][] = [];
           let draftScore = 0;
           draft.teams.forEach(team => {
-            draftteams.push([team.abbr, tournamentResult.teamData[team.abbr].score])
+            draftteams.push([team.abbr, tournamentResult.teamData[team.abbr]])
             draftScore += tournamentResult.teamData[team.abbr].score;
           });
 
@@ -131,7 +132,7 @@ export class SimulatorComponent implements OnInit {
         });
 
         draftarr.sort((a, b) => Number(b[1]) - Number(a[1]));
-        console.log(draftarr);
+        // console.log(draftarr);
 
         // const drafts = this.draftdb.drafts.sort((a, b) => b.score() - a.score());
         // drafts.forEach((draft, index) => this.metaDraft[draft.user.name][index]++);

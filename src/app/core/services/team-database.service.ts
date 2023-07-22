@@ -5,7 +5,7 @@ import { ITeam, Team } from 'src/app/interfaces/team.interface';
 export interface TeamGroupInfoData { logOdds: number, score: number, simulations: IGameSimulationResult[] }
 export interface TeamGroupInfo { [key: string]: TeamGroupInfoData };
 export interface TeamGroupDict { [key: string]: TeamGroupInfo };
-export interface TeamGroupsRanked { [key: string]: {abbr: string, logOdds: number}[] };
+export interface TeamGroupsRanked { [key: string]: {abbr: string, logOdds: number, score: number}[] };
 
 @Injectable({
   providedIn: 'root',
