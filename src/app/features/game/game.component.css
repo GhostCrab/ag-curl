@@ -1,0 +1,77 @@
+h1 {
+    color: white;
+    font-size: 50px;
+    font-weight: bolder;
+}
+
+h2 {
+    color: #ffffff;
+    font-size: 20px;
+    margin-bottom: 0px;
+}
+
+h3 {
+    color: #ffffff;
+    font-size: 15px;
+    margin-bottom: 0px;
+}
+
+a {
+    color: #5eccd6;
+    border-bottom: 2px solid transparent;
+    transition: 0.5s border-bottom;
+}
+
+.dashboard-header {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1%;
+}
+
+.dashboard-content {
+    /* display: flex; */
+    display: block;
+    margin-top: 10px;
+}
+
+.game-flex-item {
+    flex-grow: 5;
+    margin-right: 10px;
+}
+
+.pick-flex-item {
+    flex-grow: 4;
+    margin-right: 10px;
+}
+
+.score-flex-item {
+    flex-grow: 1;
+}
+
+.flexExpand {
+    flex: 1 1 auto;
+}
+
+@media (max-width: 768px) {
+    /* CSS that should be displayed if width is equal to or less than 800px goes here */
+    .dashboard-content {
+        display: block;
+    }
+
+    .game-flex-item {
+        margin-right: 0;
+    }
+
+    .pick-flex-item {
+        margin-right: 0;
+    }
+}
+
+.week-selector {
+    margin-top: 5px;
+    background-color: white;
+    width: min-content;
+    height: 51px;
+}

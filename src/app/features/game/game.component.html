@@ -1,0 +1,12 @@
+<h1>The Legend of Zelda</h1>
+<h2>Link's Battle</h2>
+<h2>Monsters Defated: {{ monstersDefeated }}</h2>
+
+
+<h3 *ngIf="monsterHealth > 0">Monster: {{ monsterName }}</h3>
+<h3 *ngIf="monsterHealth > 0">Health: {{ monsterHealth }}</h3>
+<h3 *ngIf="monsterHealth <= 0">Monster Defeated!</h3>
+<h3>Weapon: {{ weaponName }}</h3>
+<h3>Damange: {{ weaponDamage }}</h3>
+<button (click)="doDamage()" *ngIf="monsterHealth > 0">Hit!</button>
+<button (click)="findMonster()" *ngIf="monsterHealth <= 0">Find Monster</button>

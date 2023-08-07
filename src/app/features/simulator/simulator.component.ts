@@ -97,6 +97,8 @@ export class SimulatorComponent implements OnInit {
         this.metaDraft[user.name] = [0,0,0,0,0,0,0,0];
       })
 
+      let counter = 0;
+
       for (this.iterate = 0; this.iterate < this.iterations; this.iterate++) {
         if (this.iterate % 500 === 0)
           await sleep(0);
@@ -136,8 +138,26 @@ export class SimulatorComponent implements OnInit {
 
         // const drafts = this.draftdb.drafts.sort((a, b) => b.score() - a.score());
         // drafts.forEach((draft, index) => this.metaDraft[draft.user.name][index]++);
-        draftarr.forEach((draft, index) => this.metaDraft[String(draft[0])][index]++)
+        // draftarr.forEach((draft, index) => this.metaDraft[String(draft[0])][index]++)
+
+        for (let place = 0, realplace = 0; place < draftarr.length; place++) {
+          if (place > 0) {
+            if (draftarr[place-1][1] !== draftarr[place][1])
+              realplace = place;
+            else if (place === 1) {
+              console.log(draftarr);
+              counter++;
+            }
+          }
+
+          this.metaDraft[String(draftarr[place][0])][realplace]++;
+        }
       }
+
+      console.log(counter);
+      console.log(counter / this.iterations);
+
+      console.log(this.metaDraft);
 
       this.metaResult.divide(this.iterations);
 
