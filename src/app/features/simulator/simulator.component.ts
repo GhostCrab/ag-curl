@@ -102,7 +102,7 @@ export class SimulatorComponent implements OnInit {
       for (this.iterate = 0; this.iterate < this.iterations; this.iterate++) {
         if (this.iterate % 500 === 0)
           await sleep(0);
-        // this.draftdb.mockDraft();
+
         const simulations: IGameSimulationResult[] = [];
         games.forEach(game => game.initalizeFromResult());
         this.teamdb.all().forEach(team=>team.resetGames());
@@ -112,7 +112,6 @@ export class SimulatorComponent implements OnInit {
         })
 
         const teamGroupsRanked = rankTeams(simulations, this.teamdb.teamsByGroup());
-        // console.log(teamGroupsRanked);
 
         games.filter(game => game.round > 0).forEach(game => {
           simulations.push(game.simulate(false, simulations, teamGroupsRanked));
@@ -161,15 +160,11 @@ export class SimulatorComponent implements OnInit {
 
       this.metaResult.divide(this.iterations);
 
-      // metaResult.divide(iterations).raw().forEach(a => console.log(`${a.abbr}: ${a.score.toFixed(3)} ${a.round.toFixed(2)}`));
-
       this.metaDraftSorted = [];
       for (const [key, value] of Object.entries(this.metaDraft)) {
         this.metaDraftSorted.push([key, value[0]/(this.iterations/100)]);
       }
       this.metaDraftSorted.sort((a, b) => Number(b[1]) - Number(a[1]));
-
-      // metaDraftSorted.forEach(data => console.log(`${String(data[0]).padStart(6)}: ${String(Number(data[1]).toFixed(2)).padStart(5)}%`))
 
       this.allGamesSub$.next(games.filter(game => game.round >= 0));
     });
