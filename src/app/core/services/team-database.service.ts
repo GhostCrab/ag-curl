@@ -12,6 +12,11 @@ export interface TeamGroupsRanked { [key: string]: {abbr: string, logOdds: numbe
 })
 export class TeamDatabaseService {
   private teams: ITeam[] = [
+    /*15*/ new Team('Germany',         'NZL', 'A', 15, 6500),
+    /*15*/ new Team('Scotland',         'NZL', 'A', 15, 6500),
+    /*15*/ new Team('Hungary',         'NZL', 'A', 15, 6500),
+    /*15*/ new Team('Switzerland',         'NZL', 'A', 15, 6500),
+
     /*15*/ new Team('New Zealand',         'NZL', 'A', 15, 6500),
     /*11*/ new Team('Norway',              'NOR', 'A', 11, 4000),
     /*29*/ new Team('Philippines',         'PHI', 'A', 29, 50000),
