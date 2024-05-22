@@ -102,5 +102,6 @@
                 }
             }
         }
-    }
+    },
+    "defaultProject": "ag-curl"
 }
