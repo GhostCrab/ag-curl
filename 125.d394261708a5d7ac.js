@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkag_curl=self.webpackChunkag_curl||[]).push([[125],{2125:(d,s,a)=>{a.r(s),a.d(s,{DashboardModule:()=>r});var l=a(177),n=a(1738),o=a(6195),_=a(4438);let r=(()=>{class t{static#a=this.\u0275fac=function(u){return new(u||t)};static#t=this.\u0275mod=_.$C({type:t});static#s=this.\u0275inj=_.G2t({imports:[l.MD,n.r,o.Fe]})}return t})()}}]);
