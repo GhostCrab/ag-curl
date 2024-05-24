@@ -1,0 +1,72 @@
+mat-toolbar {
+  background-color: #3f51b5;
+  display: flex;
+  justify-content: right;
+  height: 32px;
+  min-height: 32px;
+  border-bottom: 1px solid #333
+}
+
+.mat-toolbar-row {
+  height: 31px;
+  min-height: 31px;
+}
+
+.flexExpand {
+  flex: 1 1 auto;
+}
+
+a {
+  display: inline-block;
+
+  color: white;
+  text-align: center;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+
+  border-radius: 3px 3px 0 0;
+  background-color: #FFFFFF30;
+  transition: background-color 0.2s ease-in-out;
+
+  box-shadow: 
+    inset 0 1px 0 0 #333,
+    inset 1px 0 0 0 #333,
+    inset -1px 0 0 0 #333,
+    inset 0 3px #3f51b5,
+    inset 0 1px 0 1px #333;
+
+  height: 31px;
+  min-height: 31px;
+
+  padding: 0px 16px;
+  margin: 0 2px 1px 2px;
+}
+
+a.current-tab-class {
+  box-shadow: 
+    inset 0 1px 0 0 rgba(51, 51, 51, 0.9),
+    inset 1px 0 0 0 rgba(51, 51, 51, 0.9),
+    inset -1px 0 0 0 rgba(51, 51, 51, 0.9),
+    inset 0 3px #6bace9,
+    inset 0 1px 0 1px rgb(51, 51, 51);
+
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.7);
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+a:hover {
+  text-shadow: 1px 1px rgba(0, 0, 0, .7);
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+a {
+  cursor: pointer;
+}
+
+h1 {
+  padding-top: 2px;
+  font-size: 28px;
+  text-shadow: 2px 2px 3px black;
+  margin-right: 10px;
+  margin-top: 13px;
+}

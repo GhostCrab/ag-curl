@@ -1,0 +1,8 @@
+<mat-toolbar *ngIf="show" color="primary">
+    <mat-toolbar-row color="primary">
+      <h1 style="margin: 0; padding: 0 8px 0 0;">EURO '24 DC</h1>
+      <a [ngClass]="getTabClass('dashboard')" [routerLink]="'/'" color="primary"> Dashboard </a>
+      <a [ngClass]="getTabClass('simulator')" [routerLink]="'/simulator'"> Simulator </a>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  

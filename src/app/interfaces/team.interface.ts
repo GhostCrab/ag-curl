@@ -64,20 +64,20 @@ export class Team {
       if (this.name === 'Korea Republic') return 'Korea';
       if (this.name === 'China PR') return 'China';
 
-      if (this.name === 'W49') return '1A|2C';
-      if (this.name === 'W50') return '1C|2A';
-      if (this.name === 'W51') return '1E|2G';
-      if (this.name === 'W52') return '1G|2E';
-      if (this.name === 'W53') return '1D|2B';
-      if (this.name === 'W54') return '1B|2D';
-      if (this.name === 'W55') return '1H|2F';
-      if (this.name === 'W56') return '1F|2H';
-      if (this.name === 'W57') return '1A|2C|1E|2G';
-      if (this.name === 'W58') return '1C|2A|1G|2E';
-      if (this.name === 'W59') return '1D|2B|1H|2F';
-      if (this.name === 'W60') return '1B|2D|1F|2H';
-      if (this.name === 'W61') return 'WA|WC|WE|WG';
-      if (this.name === 'W62') return 'WB|WD|WF|WH';
+      // if (this.name === 'W49') return '1A|2C';
+      // if (this.name === 'W50') return '1C|2A';
+      // if (this.name === 'W51') return '1E|2G';
+      // if (this.name === 'W52') return '1G|2E';
+      // if (this.name === 'W53') return '1D|2B';
+      // if (this.name === 'W54') return '1B|2D';
+      // if (this.name === 'W55') return '1H|2F';
+      // if (this.name === 'W56') return '1F|2H';
+      // if (this.name === 'W57') return '1A|2C|1E|2G';
+      // if (this.name === 'W58') return '1C|2A|1G|2E';
+      // if (this.name === 'W59') return '1D|2B|1H|2F';
+      // if (this.name === 'W60') return '1B|2D|1F|2H';
+      // if (this.name === 'W61') return 'WA|WC|WE|WG';
+      // if (this.name === 'W62') return 'WB|WD|WF|WH';
       return this.name;
     }
 

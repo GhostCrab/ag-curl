@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { FIFAData } from '../../interfaces/fifa-api.interface';
-import { Game, IGame } from 'src/app/interfaces/game.interface';
+import { IGame, newGameFromFIFA } from 'src/app/interfaces/game.interface';
 import { TeamDatabaseService } from './team-database.service';
 import { DraftDatabaseService } from './draft-database.service';
 
@@ -36,7 +36,7 @@ export class FIFAApiService {
             map((data) => {
               const games: IGame[] = [];
               for (const result of data.Results) {
-                  games.push(new Game(result, this.teamdb, this.draftdb));
+                  games.push(newGameFromFIFA(result, this.teamdb, this.draftdb));
               }
 
               return games;

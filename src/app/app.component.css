@@ -1,56 +1,43 @@
 :host {
-    position: relative;
-    display: block;
-    left: 0;
-    transition: left 0.3s ease;
+  position: relative;
+  display: block;
+  left: 0;
+  transition: left 0.3s ease;
 }
 
 :host.drawer-open {
-    left: 70%;
+  left: 70%;
 }
 
 .nav-bar {
-    position: fixed;
-    display: block;
-    top: 0;
-    width: 100vw;
-    z-index: 100;
+  position: fixed;
+  display: block;
+  top: 0;
+  width: 100vw;
+  z-index: 100;
 }
 
 .navbar-padding {
-    display: block;
-    position: relative;
-    margin-top: 3.5rem;
+  display: block;
+  position: relative;
+  margin-top: 3.5rem;
 }
 
 .main-section {
-    min-height: 125vh;
+  min-height: 125vh;
 }
 
 .app-content {
-    /* padding-top: 64px; */
-    margin: 10px;
-    width: 80%;
-    margin: 0 auto;
-}
-
-.factorial-response {
-  color: white;
-  font-weight: bold;
-}
-
-.title {
-    padding: 10px 0;
-    /* letter-spacing: 0.075em; */
-    color: rgb(153, 180, 255);
-    font-weight: bold;
-    font-size: 2em;
+  padding-top: 32px;
+  margin: 10px;
+  width: 80%;
+  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
-    .app-content {
-        /* padding-top: 64px; */
-        width: 95%;
-        margin: 0 auto;
-    }
+  .app-content {
+    padding-top: 64px;
+    width: 95%;
+    margin: 0 auto;
+  }
 }

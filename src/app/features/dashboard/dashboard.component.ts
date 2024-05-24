@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, from, lastValueFrom, Observable, of } from 'rxjs';
 import { DraftDatabaseService } from 'src/app/core/services/draft-database.service';
 
-import { FIFAApiService } from 'src/app/core/services/fifa-api.service';
+import { UEFAApiService } from 'src/app/core/services/uefa-api.service';
 import { IDraft } from 'src/app/interfaces/draft.interface';
 import { IGame } from 'src/app/interfaces/game.interface';
 
@@ -20,7 +20,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   updateInterval: NodeJS.Timer;
 
   constructor(
-    private readonly fifaapi: FIFAApiService,
+    private readonly uefaapi: UEFAApiService,
     private readonly draftdb: DraftDatabaseService
   ) {}
 
@@ -47,6 +47,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   updateGames(): Promise<IGame[]> {
-    return lastValueFrom(this.fifaapi.getGames());
+    return lastValueFrom(this.uefaapi.getGames());
   }
 }

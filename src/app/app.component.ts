@@ -10,13 +10,6 @@ function sleep(ms: number) {
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'WWC 2023 Draft Club';
-  name = 'NavigationBarProject';
-
-  factorialResult: number = 0;
-  factorialInput: number = navigator.hardwareConcurrency;
-  testTimer: number = 0;
-
   @HostBinding('class.drawer-open')
   isDrawerOpen: boolean = false;
 

@@ -16,14 +16,12 @@ export class DraftDatabaseService {
     private teamdb: TeamDatabaseService
   ) {
     this.drafts = [
-      new Draft(this.userdb.get("Keegan"), [this.teamdb.get('USA'),this.teamdb.get('POR'),this.teamdb.get('COL'),this.teamdb.get('VIE')]),
-      new Draft(this.userdb.get("Ryan"),   [this.teamdb.get('ESP'),this.teamdb.get('DEN'),this.teamdb.get('KOR'),this.teamdb.get('HAI')]),
-      new Draft(this.userdb.get("SBrad"),  [this.teamdb.get('ENG'),this.teamdb.get('NZL'),this.teamdb.get('SUI'),this.teamdb.get('PAN')]),
-      new Draft(this.userdb.get("Andrew"), [this.teamdb.get('FRA'),this.teamdb.get('ITA'),this.teamdb.get('IRL'),this.teamdb.get('PHI')]),
-      new Draft(this.userdb.get("TJ"),     [this.teamdb.get('GER'),this.teamdb.get('CAN'),this.teamdb.get('ARG'),this.teamdb.get('MAR')]),
-      new Draft(this.userdb.get("Bardia"), [this.teamdb.get('AUS'),this.teamdb.get('NED'),this.teamdb.get('CHN'),this.teamdb.get('ZAM')]),
-      new Draft(this.userdb.get("Micah"),  [this.teamdb.get('SWE'),this.teamdb.get('BRA'),this.teamdb.get('JAM'),this.teamdb.get('CRC')]),
-      new Draft(this.userdb.get("Cooper"), [this.teamdb.get('JPN'),this.teamdb.get('NOR'),this.teamdb.get('NGA'),this.teamdb.get('RSA')]),
+      new Draft(this.userdb.get("Position 1"), [this.teamdb.get('ENG'),this.teamdb.get('SUI'),this.teamdb.get('SRB'),this.teamdb.get('SVK')]),
+      new Draft(this.userdb.get("Position 2"), [this.teamdb.get('FRA'),this.teamdb.get('TUR'),this.teamdb.get('AUT'),this.teamdb.get('GEO')]),
+      new Draft(this.userdb.get("Position 3"), [this.teamdb.get('GER'),this.teamdb.get('DEN'),this.teamdb.get('HUN'),this.teamdb.get('ALB')]),
+      new Draft(this.userdb.get("Position 4"), [this.teamdb.get('POR'),this.teamdb.get('CRO'),this.teamdb.get('SCO'),this.teamdb.get('SVN')]),
+      new Draft(this.userdb.get("Position 5"), [this.teamdb.get('ESP'),this.teamdb.get('NED'),this.teamdb.get('UKR'),this.teamdb.get('ROU')]),
+      new Draft(this.userdb.get("Position 6"), [this.teamdb.get('ITA'),this.teamdb.get('BEL'),this.teamdb.get('CZE'),this.teamdb.get('POL')]),
     ];
   }
 

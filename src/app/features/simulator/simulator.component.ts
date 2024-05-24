@@ -4,6 +4,7 @@ import { DraftDatabaseService } from 'src/app/core/services/draft-database.servi
 
 import { FIFAApiService } from 'src/app/core/services/fifa-api.service';
 import { TeamDatabaseService, TeamGroupDict, TeamGroupInfoData, TeamGroupsRanked } from 'src/app/core/services/team-database.service';
+import { UEFAApiService } from 'src/app/core/services/uefa-api.service';
 import { UserDatabaseService } from 'src/app/core/services/user-database.service';
 import { IDraft } from 'src/app/interfaces/draft.interface';
 import { IGame } from 'src/app/interfaces/game.interface';
@@ -26,7 +27,7 @@ function rankTeams(simulations: IGameSimulationResult[], teamGroups: TeamGroupDi
   for (const [group, info] of Object.entries(teamGroups)) {
     if(!(group in result)) result[group] = [];
     for (const [abbr, data] of Object.entries(info)) {
-      result[group].push({abbr: abbr, logOdds: data.logOdds, score: data.score});
+      result[group].push({abbr: abbr, logOdds: data.logOdds, score: data.score, group: group});
     }
     result[group].sort( (a, b) => {
       const aInfo: TeamGroupInfoData = info[a.abbr];
@@ -50,6 +51,19 @@ function rankTeams(simulations: IGameSimulationResult[], teamGroups: TeamGroupDi
       return bInfo.score - aInfo.score;
     })
   }
+
+  // create a group of all the 3rd place teams and rank them against eachother
+  result['3'] = Object.entries(result).map(([group, teams]) => teams[2]);
+
+  result['3'].sort( (a, b) => {
+    const aInfo: TeamGroupInfoData = teamGroups[a.group][a.abbr];
+    const bInfo: TeamGroupInfoData = teamGroups[b.group][b.abbr];
+
+    if (aInfo.score === bInfo.score)
+      return Math.random() - 0.5;
+
+    return bInfo.score - aInfo.score;
+  });
 
   return result;
 }
@@ -75,7 +89,7 @@ export class SimulatorComponent implements OnInit {
   updateInterval: NodeJS.Timer;
 
   constructor(
-    readonly fifaapi: FIFAApiService,
+    readonly uefaapi: UEFAApiService,
     readonly teamdb: TeamDatabaseService,
     readonly userdb: UserDatabaseService,
     readonly draftdb: DraftDatabaseService
@@ -104,7 +118,7 @@ export class SimulatorComponent implements OnInit {
           await sleep(0);
 
         const simulations: IGameSimulationResult[] = [];
-        games.forEach(game => game.initalizeFromResult());
+        games.forEach(game => game.reinitialize());
         this.teamdb.all().forEach(team=>team.resetGames());
 
         games.filter(game => game.round === 0).forEach(game => {
@@ -171,7 +185,7 @@ export class SimulatorComponent implements OnInit {
   }
 
   updateGames(): Promise<IGame[]> {
-    return lastValueFrom(this.fifaapi.getGames());
+    return lastValueFrom(this.uefaapi.getGames());
   }
 
 }

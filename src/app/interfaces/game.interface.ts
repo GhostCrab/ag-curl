@@ -5,7 +5,99 @@ import { UserDatabaseService } from '../core/services/user-database.service';
 import { FIFADataResult } from './fifa-api.interface';
 import { IGameSimulationResult } from './simulation.interface';
 import { ITeam } from './team.interface';
+import { MetaDataType, Status, UEFAMatch } from './uefa-api.interface';
 import { IUser } from './user.interface';
+
+export interface IGameInitializer {
+  id: number;
+  home: ITeam;
+  away: ITeam;
+  homeGoals: number;
+  awayGoals: number;
+  homePenaltyGoals: number;
+  awayPenaltyGoals: number;
+  active: boolean;
+  complete: boolean;
+  gt: number;
+  homeUser: IUser;
+  awayUser: IUser;
+  knockout: boolean;
+  round: number;
+}
+
+export function newGameFromUEFA(match: UEFAMatch, teamdb: TeamDatabaseService, draftdb: DraftDatabaseService): Game {
+  const homeTeamAbbr = match.homeTeam.teamCode !== '' ? match.homeTeam.teamCode : match.homeTeam.internationalName;
+  const awayTeamAbbr = match.awayTeam.teamCode !== '' ? match.awayTeam.teamCode : match.awayTeam.internationalName;
+
+  const homeTeam = teamdb.get(homeTeamAbbr);
+  const awayTeam = teamdb.get(awayTeamAbbr);
+
+  const homeUser = draftdb.getUserByAbbr(homeTeam.abbr);
+  const awayUser = draftdb.getUserByAbbr(awayTeam.abbr);
+
+  const init: IGameInitializer = {
+    id: match.matchNumber || 0,
+    home: homeTeam,
+    away: awayTeam,
+    homeGoals: match.score?.regular.home || 0,
+    awayGoals: match.score?.regular.away || 0,
+    homePenaltyGoals: match.score?.penalty?.home || 0,
+    awayPenaltyGoals: match.score?.penalty?.away || 0,
+    active: match.status !== Status.Finished && match.status !== Status.Upcoming,
+    complete: match.status === Status.Finished,
+    gt: new Date(match.kickOffTime.dateTime).getTime(),
+    homeUser: homeUser,
+    awayUser: awayUser,
+    knockout: match.round.metaData.type !== MetaDataType.GroupStandings,
+    round: 0
+  }
+
+  if (init.knockout) {
+    if (match.round.metaData.type === MetaDataType.RoundOf16) init.round = 1;
+    else if (match.round.metaData.type === MetaDataType.QuarterFinals) init.round = 2;
+    else if (match.round.metaData.type === MetaDataType.Semifinal) init.round = 3;
+    else if (match.round.metaData.type === MetaDataType.Final) init.round = 4;
+    else init.round = -1; // play-off for 3rd
+  }
+
+  return new Game(init, teamdb, draftdb);
+}
+
+export function newGameFromFIFA(result: FIFADataResult, teamdb: TeamDatabaseService, draftdb: DraftDatabaseService): Game {
+  const homeTeam = teamdb.get(result.Home?.Abbreviation ? result.Home.Abbreviation : result.PlaceHolderA);
+  const awayTeam = teamdb.get(result.Away?.Abbreviation ? result.Away.Abbreviation : result.PlaceHolderB);
+
+  const homeUser = draftdb.getUserByAbbr(homeTeam.abbr);
+  const awayUser = draftdb.getUserByAbbr(awayTeam.abbr);
+  
+  const init: IGameInitializer = {
+    id: result.MatchNumber,
+    home: homeTeam,
+    away: awayTeam,
+    homeGoals: result.HomeTeamScore === null ? 0 : result.HomeTeamScore,
+    awayGoals: result.AwayTeamScore === null ? 0 : result.AwayTeamScore,
+    homePenaltyGoals: result.HomeTeamPenaltyScore === null ? 0 : result.HomeTeamPenaltyScore,
+    awayPenaltyGoals: result.AwayTeamPenaltyScore === null ? 0 : result.AwayTeamPenaltyScore,
+    active: result.MatchStatus === 3,
+    complete: result.MatchStatus === 0,
+    gt: new Date(result.Date).getTime(),
+    homeUser: homeUser,
+    awayUser: awayUser,
+    knockout: result.StageName[0].Description.toLowerCase() !== 'first stage',
+    round: 0
+  }
+  
+  if (init.knockout) {
+    if (result.StageName[0].Description === 'Round of 16') init.round = 1;
+    else if (result.StageName[0].Description === 'Quarter-final')
+      init.round = 2;
+    else if (result.StageName[0].Description === 'Semi-final') init.round = 3;
+    else if (result.StageName[0].Description === 'Final') init.round = 4;
+    else init.round = -1; // play-off for 3rd
+  }
+
+  return new Game(init, teamdb, draftdb);
+}
 
 export interface IGame {
   id: number;
@@ -36,7 +128,7 @@ export interface IGame {
   simulate(write: boolean, results: IGameSimulationResult[], teamGroups?: TeamGroupsRanked): IGameSimulationResult;
   includesTeam(team: ITeam): boolean;
   compare(game: IGame): boolean;
-  initalizeFromResult(): void;
+  reinitialize(): void;
 }
 
 export class Game implements IGame {
@@ -58,40 +150,28 @@ export class Game implements IGame {
   //https://api.fifa.com/api/v3/picture/flags-{format}-{size}/ECU
 
   constructor(
-    private readonly result: FIFADataResult,
+    private readonly init: IGameInitializer,
     private readonly teamdb: TeamDatabaseService,
     private readonly draftdb: DraftDatabaseService
   ) {
-    this.result = result;
-    this.initalizeFromResult();
+    this.reinitialize();
   }
 
-  initalizeFromResult() {
-    // console.log(this.result);
-    this.id = this.result.MatchNumber;
-    this.home = this.teamdb.get(this.result.Home?.Abbreviation ? this.result.Home.Abbreviation : this.result.PlaceHolderA);
-    this.away = this.teamdb.get(this.result.Away?.Abbreviation ? this.result.Away.Abbreviation : this.result.PlaceHolderB);
-    this.homeGoals = this.result.HomeTeamScore === null ? 0 : this.result.HomeTeamScore;
-    this.awayGoals = this.result.AwayTeamScore === null ? 0 : this.result.AwayTeamScore;
-    this.homePenaltyGoals =
-      this.result.HomeTeamPenaltyScore === null ? 0 : this.result.HomeTeamPenaltyScore;
-    this.awayPenaltyGoals =
-      this.result.AwayTeamPenaltyScore === null ? 0 : this.result.AwayTeamPenaltyScore;
-    this.active = this.result.MatchStatus === 3;
-    this.complete = this.result.MatchStatus === 0;
-    this.gt = new Date(this.result.Date).getTime();
-    this.homeUser = this.draftdb.getUserByAbbr(this.home.abbr);
-    this.awayUser = this.draftdb.getUserByAbbr(this.away.abbr);
-    this.knockout = this.result.StageName[0].Description.toLowerCase() !== 'first stage';
-    this.round = 0;
-    if (this.knockout) {
-      if (this.result.StageName[0].Description === 'Round of 16') this.round = 1;
-      else if (this.result.StageName[0].Description === 'Quarter-final')
-        this.round = 2;
-      else if (this.result.StageName[0].Description === 'Semi-final') this.round = 3;
-      else if (this.result.StageName[0].Description === 'Final') this.round = 4;
-      else this.round = -1; // play-off for 3rd
-    }
+  public reinitialize(): void {
+    this.id = this.init.id;
+    this.home = this.init.home;
+    this.away = this.init.away;
+    this.homeGoals = this.init.homeGoals;
+    this.awayGoals = this.init.awayGoals;
+    this.homePenaltyGoals = this.init.homePenaltyGoals;
+    this.awayPenaltyGoals = this.init.awayPenaltyGoals;
+    this.active = this.init.active;
+    this.complete = this.init.complete;
+    this.gt = this.init.gt;
+    this.homeUser = this.init.homeUser;
+    this.awayUser = this.init.awayUser;
+    this.knockout = this.init.knockout;
+    this.round = this.init.round;
   }
 
   public status(): string {
@@ -323,6 +403,61 @@ export class Game implements IGame {
     }),`;
   }
 
+  getBestGroupOf3rds(groups: string, teamGroups: TeamGroupsRanked): string {
+    // playing 1C
+    const thirdGroupStr = teamGroups['3'].slice(0, 4).map(info => info.group).sort().join("");
+
+    /*
+    ABCD 3A 3D 3B 3C
+    ABCE 3A 3E 3B 3C
+    ABCF 3A 3F 3B 3C
+    ABDE 3D 3E 3A 3B
+    ABDF 3D 3F 3A 3B
+    ABEF 3E 3F 3B 3A
+    ACDE 3E 3D 3C 3A
+    ACDF 3F 3D 3C 3A
+    ACEF 3E 3F 3C 3A
+    ADEF 3E 3F 3D 3A
+    BCDE 3E 3D 3B 3C
+    BCDF 3F 3D 3C 3B
+    BCEF 3F 3E 3C 3B
+    BDEF 3F 3E 3D 3B
+    CDEF 3F 3E 3D 3C
+    */
+
+    // vs 1B
+    if (groups === 'ADEF') {
+      if (thirdGroupStr === 'ABCF' || thirdGroupStr === 'ABCE' || thirdGroupStr === 'ABCD') return 'A';
+      if (thirdGroupStr === 'ABDF' || thirdGroupStr === 'ABDE') return 'D';
+      if (thirdGroupStr === 'BCDE' || thirdGroupStr === 'ADEF' || thirdGroupStr === 'ACEF' || thirdGroupStr === 'ACDE' || thirdGroupStr === 'ABEF') return 'E';
+      if (thirdGroupStr === 'CDEF' || thirdGroupStr === 'BDEF' || thirdGroupStr === 'BCEF' || thirdGroupStr === 'BCDF' || thirdGroupStr === 'ACDF') return 'F';
+    }
+
+    // vs 1C
+    if (groups === 'DEF') {
+      if (thirdGroupStr === 'ABCD' || thirdGroupStr === 'ACDE' || thirdGroupStr === 'ACDF' || thirdGroupStr === 'BCDE' || thirdGroupStr === 'BCDF') return 'D';
+      if (thirdGroupStr === 'ABCE' || thirdGroupStr === 'ABDE' || thirdGroupStr === 'BCEF' || thirdGroupStr === 'BDEF' || thirdGroupStr === 'CDEF') return 'E';
+      if (thirdGroupStr === 'ABCF' || thirdGroupStr === 'ABDF' || thirdGroupStr === 'ABEF' || thirdGroupStr === 'ACEF' || thirdGroupStr === 'ADEF') return 'F';
+    }
+
+    // vs 1E
+    if (groups === 'ABCD') {
+      if (thirdGroupStr === 'ABDE' || thirdGroupStr === 'ABDF') return 'A';
+      if (thirdGroupStr === 'ABCD' || thirdGroupStr === 'ABCE' || thirdGroupStr === 'ABCF' || thirdGroupStr === 'ABEF' || thirdGroupStr === 'BCDE') return 'B';
+      if (thirdGroupStr === 'ACDE' || thirdGroupStr === 'ACDF' || thirdGroupStr === 'ACEF' || thirdGroupStr === 'BCDF' || thirdGroupStr === 'BCEF') return 'C';
+      if (thirdGroupStr === 'ADEF' || thirdGroupStr === 'BDEF' || thirdGroupStr === 'CDEF') return 'D';
+    }
+
+    // vs 1F
+    if (groups === 'ABC') {
+      if (thirdGroupStr === 'ABEF' || thirdGroupStr === 'ACDE' || thirdGroupStr === 'ACDF' || thirdGroupStr === 'ACEF' || thirdGroupStr === 'ADEF') return 'A';
+      if (thirdGroupStr === 'ABDE' || thirdGroupStr === 'ABDF' || thirdGroupStr === 'BCDF' || thirdGroupStr === 'BCEF' || thirdGroupStr === 'BDEF') return 'B';
+      if (thirdGroupStr === 'ABCD' || thirdGroupStr === 'ABCE' || thirdGroupStr === 'ABCF' || thirdGroupStr === 'BCDE' || thirdGroupStr === 'CDEF') return 'C';
+    }
+
+    return 'X';
+  }
+
   simulate(write: boolean, results: IGameSimulationResult[], teamGroups?: TeamGroupsRanked): IGameSimulationResult {
     if (this.complete) 
       return {
@@ -362,7 +497,7 @@ export class Game implements IGame {
     if (this.home.rank === 0) {
       if (this.round === 1 && teamGroups) {
         const groupRank = Number(this.home.name[0]) - 1;
-        const group = this.home.name[1];
+        const group = this.home.name.slice(-1);
 
         result.homeTeamAbbr = teamGroups[group][groupRank].abbr;
         result.homeLogOdds = teamGroups[group][groupRank].logOdds;
@@ -382,7 +517,24 @@ export class Game implements IGame {
     if (this.away.rank === 0) {
       if (this.round === 1 && teamGroups) {
         const groupRank = Number(this.away.name[0]) - 1;
-        const group = this.away.name[1];
+        let group = this.away.name.slice(-1);
+
+        if (groupRank === 2) {
+          switch(this.home.name) {
+            case '3rd: D/E/F': {
+              group = this.getBestGroupOf3rds('DEF', teamGroups)
+            } break;
+            case '3rd: A/D/E/F': {
+              group = this.getBestGroupOf3rds('ADEF', teamGroups)
+            } break;
+            case '3rd: A/B/C': {
+              group = this.getBestGroupOf3rds('ABC', teamGroups)
+            } break;
+            case '3rd: A/B/C/D': {
+              group = this.getBestGroupOf3rds('ABCD', teamGroups)
+            } break;
+          }
+        }
 
         result.awayTeamAbbr = teamGroups[group][groupRank].abbr;
         result.awayLogOdds = teamGroups[group][groupRank].logOdds;
