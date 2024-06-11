@@ -16,12 +16,12 @@ export class DraftDatabaseService {
     private teamdb: TeamDatabaseService
   ) {
     this.drafts = [
-      new Draft(this.userdb.get("Position 1"), [this.teamdb.get('ENG'),this.teamdb.get('SUI'),this.teamdb.get('SRB'),this.teamdb.get('SVK')]),
-      new Draft(this.userdb.get("Position 2"), [this.teamdb.get('FRA'),this.teamdb.get('TUR'),this.teamdb.get('AUT'),this.teamdb.get('GEO')]),
-      new Draft(this.userdb.get("Position 3"), [this.teamdb.get('GER'),this.teamdb.get('DEN'),this.teamdb.get('HUN'),this.teamdb.get('ALB')]),
-      new Draft(this.userdb.get("Position 4"), [this.teamdb.get('POR'),this.teamdb.get('CRO'),this.teamdb.get('SCO'),this.teamdb.get('SVN')]),
-      new Draft(this.userdb.get("Position 5"), [this.teamdb.get('ESP'),this.teamdb.get('NED'),this.teamdb.get('UKR'),this.teamdb.get('ROU')]),
-      new Draft(this.userdb.get("Position 6"), [this.teamdb.get('ITA'),this.teamdb.get('BEL'),this.teamdb.get('CZE'),this.teamdb.get('POL')]),
+      new Draft(this.userdb.get("Cooper"), [this.teamdb.get('ENG'),this.teamdb.get('TUR'),this.teamdb.get('HUN'),this.teamdb.get('SVK')]),
+      new Draft(this.userdb.get("TJ"),     [this.teamdb.get('FRA'),this.teamdb.get('SUI'),this.teamdb.get('SRB'),this.teamdb.get('ALB')]),
+      new Draft(this.userdb.get("Andrew"), [this.teamdb.get('GER'),this.teamdb.get('CRO'),this.teamdb.get('SCO'),this.teamdb.get('SVN')]),
+      new Draft(this.userdb.get("Ryan"),   [this.teamdb.get('POR'),this.teamdb.get('DEN'),this.teamdb.get('UKR'),this.teamdb.get('GEO')]),
+      new Draft(this.userdb.get("Micah"),  [this.teamdb.get('BEL'),this.teamdb.get('ESP'),this.teamdb.get('CZE'),this.teamdb.get('AUT')]),
+      new Draft(this.userdb.get("Bardia"), [this.teamdb.get('NED'),this.teamdb.get('ITA'),this.teamdb.get('POL'),this.teamdb.get('ROU')]),
     ];
   }
 
