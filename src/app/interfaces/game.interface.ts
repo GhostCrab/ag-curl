@@ -29,18 +29,21 @@ export function newGameFromUEFA(match: UEFAMatch, teamdb: TeamDatabaseService, d
   const homeTeamAbbr = match.homeTeam.teamCode !== '' ? match.homeTeam.teamCode : match.homeTeam.internationalName;
   const awayTeamAbbr = match.awayTeam.teamCode !== '' ? match.awayTeam.teamCode : match.awayTeam.internationalName;
 
-  const homeTeam = teamdb.get(homeTeamAbbr);
-  const awayTeam = teamdb.get(awayTeamAbbr);
+  let homeTeam, awayTeam: ITeam;
+  let homeUser, awayUser: IUser;
 
-  const homeUser = draftdb.getUserByAbbr(homeTeam.abbr);
-  const awayUser = draftdb.getUserByAbbr(awayTeam.abbr);
+  homeTeam = teamdb.get(homeTeamAbbr);
+  homeUser = draftdb.getUserByAbbr(homeTeam.abbr);
+
+  awayTeam = teamdb.get(awayTeamAbbr);
+  awayUser = draftdb.getUserByAbbr(awayTeam.abbr);
 
   const init: IGameInitializer = {
     id: match.matchNumber || 0,
     home: homeTeam,
     away: awayTeam,
-    homeGoals: match.score?.regular.home || 0,
-    awayGoals: match.score?.regular.away || 0,
+    homeGoals: match.score?.total.home || match.score?.regular.home || 0,
+    awayGoals: match.score?.total.away || match.score?.regular.away || 0,
     homePenaltyGoals: match.score?.penalty?.home || 0,
     awayPenaltyGoals: match.score?.penalty?.away || 0,
     active: match.status !== Status.Finished && match.status !== Status.Upcoming,
@@ -506,6 +509,15 @@ export class Game implements IGame {
 
         result.homeTeamAbbr = this.winnerAbbr(results[gameIndex]);
         result.homeLogOdds = this.winnerLogOdds(results[gameIndex]);
+      } else if (this.home.name.length === 7) {
+        const [homeAbbr, awayAbbr] = this.home.name.split('/');
+        for (let gameIndex = results.length - 1; gameIndex >= 0; gameIndex--) {
+          if(results[gameIndex].awayTeamAbbr === awayAbbr && results[gameIndex].homeTeamAbbr === homeAbbr) {
+            result.homeTeamAbbr = this.winnerAbbr(results[gameIndex]);
+            result.homeLogOdds = this.winnerLogOdds(results[gameIndex]);
+            break;
+          };
+        }
       }
 
       if (write) {
@@ -513,6 +525,8 @@ export class Game implements IGame {
         this.homeUser = this.draftdb.getUserByAbbr(result.homeTeamAbbr);
       }
     }
+
+    
 
     if (this.away.rank === 0) {
       if (this.round === 1 && teamGroups) {
@@ -543,6 +557,15 @@ export class Game implements IGame {
 
         result.awayTeamAbbr = this.winnerAbbr(results[gameIndex]);
         result.awayLogOdds = this.winnerLogOdds(results[gameIndex]);
+      } else if (this.away.name.length === 7) {
+        const [homeAbbr, awayAbbr] = this.away.name.split('/');
+        for (let gameIndex = results.length - 1; gameIndex >= 0; gameIndex--) {
+          if(results[gameIndex].awayTeamAbbr === awayAbbr && results[gameIndex].homeTeamAbbr === homeAbbr) {
+            result.awayTeamAbbr = this.winnerAbbr(results[gameIndex]);
+            result.awayLogOdds = this.winnerLogOdds(results[gameIndex]);
+            break;
+          };
+        }
       }
 
       if (write) {

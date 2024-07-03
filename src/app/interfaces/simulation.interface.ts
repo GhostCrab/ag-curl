@@ -45,6 +45,8 @@ export class TournamentSimulationResult implements ITournamentSimulationResult {
 
   add(result: ITournamentSimulationResult): ITournamentSimulationResult {
     for (const [abbr, info] of Object.entries(result.teamData)) {
+      if (this.teamData[abbr] === undefined) 
+        debugger;
       this.teamData[abbr].round += info.round;
       this.teamData[abbr].score += info.score;
     }

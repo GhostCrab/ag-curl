@@ -158,7 +158,6 @@ export class SimulatorComponent implements OnInit {
             if (draftarr[place-1][1] !== draftarr[place][1])
               realplace = place;
             else if (place === 1) {
-              console.log(draftarr);
               counter++;
             }
           }
@@ -167,10 +166,10 @@ export class SimulatorComponent implements OnInit {
         }
       }
 
-      console.log(counter);
-      console.log(counter / this.iterations);
+      // console.log(counter);
+      // console.log(counter / this.iterations);
 
-      console.log(this.metaDraft);
+      // console.log(this.metaDraft);
 
       this.metaResult.divide(this.iterations);
 
