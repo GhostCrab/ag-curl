@@ -72,7 +72,8 @@ export class ScoreListComponent implements OnInit {
                 }
             }
 
-            this.scores[user.name] = [score, completedGames, (wonGames / completedGames).toFixed(3)];
+            let record = completedGames == 0 ? 0 : wonGames / completedGames;
+            this.scores[user.name] = [score, completedGames, (record).toFixed(3)];
         }
 
         const tmpScores: [string, [number, number, string]][] = [];

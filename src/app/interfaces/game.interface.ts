@@ -69,9 +69,8 @@ export class Game implements IGame {
         this.active = game.status.detailedState.includes("In Progress");
         this.complete = game.status.detailedState.includes("Final") || game.status.detailedState.includes("Mercy") || game.status.detailedState.includes("Game Over");
         this.gt = new Date(game.gameDate).getTime();
-        // https://midfield.mlbstatic.com/v1/team/nm/spots/24
-        this.homeImg = game.teams.home.team.link.replace('/api/', 'https://midfield.mlbstatic.com/').replace('teams', 'team') + '/spots/24'
-        this.awayImg = game.teams.away.team.link.replace('/api/', 'https://midfield.mlbstatic.com/').replace('teams', 'team') + '/spots/24'
+        this.homeImg = this.home.flagUrl;
+        this.awayImg = this.away.flagUrl;
         this.homeUser = draftdb.getUserByAbbr(game.teams.home.team.abbreviation);
         this.awayUser = draftdb.getUserByAbbr(game.teams.away.team.abbreviation);
         this.knockout = !game.description.includes("Pool");

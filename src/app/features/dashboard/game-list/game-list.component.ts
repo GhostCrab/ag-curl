@@ -18,4 +18,8 @@ export class GameListComponent implements OnInit {
     }
 
     ngOnInit(): void {}
+
+    trackByGameId(index: number, game: IGame): number {
+        return game.id;
+    }
 }
