@@ -6,7 +6,7 @@ import { IUser, User } from 'src/app/interfaces/user.interface';
 })
 export class UserDatabaseService {
     private users: IUser[] = [
-        new User('Andrew'),
+        new User('TJ'),
         new User('Brad'),
         new User('Cooper'),
         new User('Ryan')
