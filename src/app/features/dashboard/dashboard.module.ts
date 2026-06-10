@@ -6,13 +6,15 @@ import { DashboardComponent } from './dashboard.component';
 import { ScoreListComponent } from './score-list/score-list.component';
 import { GameListComponent } from './game-list/game-list.component';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { TeamStatsComponent } from './team-stats/team-stats.component';
 
 
 @NgModule({
   declarations: [
     DashboardComponent,
     ScoreListComponent,
-    GameListComponent
+    GameListComponent,
+    TeamStatsComponent
   ],
   imports: [
     CommonModule,

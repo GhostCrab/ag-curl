@@ -67,13 +67,13 @@ export class Game implements IGame {
         this.homePenaltyScore = 0;
         this.awayPenaltyScore = 0;
         this.active = game.status.detailedState.includes("In Progress");
-        this.complete = game.status.detailedState.includes("Final") || game.status.detailedState.includes("Mercy") || game.status.detailedState.includes("Game Over");
+        this.complete = game.status.detailedState.includes("Final") || game.status.detailedState.includes("Mercy") || game.status.detailedState.includes("Game Over") || game.status.detailedState.includes("Completed Early");
         this.gt = new Date(game.gameDate).getTime();
         this.homeImg = this.home.flagUrl;
         this.awayImg = this.away.flagUrl;
         this.homeUser = draftdb.getUserByAbbr(game.teams.home.team.abbreviation);
         this.awayUser = draftdb.getUserByAbbr(game.teams.away.team.abbreviation);
-        this.knockout = !game.description.includes("Pool");
+        this.knockout = !game.description.includes("Pool") || game.description.includes('Quarterfinal');
         this.inning = 
             this.active && 
             game.linescore.currentInningOrdinal !== undefined && 
@@ -202,7 +202,7 @@ export class Game implements IGame {
     }
 
     public getScore(abbr: string): number {
-        if (!this.complete) return 0;
+       if (!this.complete) return 0;
 
         let ro16Bonus = 0;
         if (this.round === 2) // bonus point for making it to knockout

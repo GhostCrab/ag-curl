@@ -5,4 +5,7 @@
     <div class="game-flex-item">
         <app-game-list [games$]="allGames$" class="flex-item"></app-game-list>
     </div>
+    <div class="stats-flex-item">
+        <app-team-stats [games$]="allGames$" [drafts$]="allDrafts$"></app-team-stats>
+    </div>
 </div>

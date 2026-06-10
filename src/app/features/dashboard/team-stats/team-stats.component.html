@@ -1,0 +1,61 @@
+<div class="stats-container">
+    <!-- Draft Standings -->
+    <div class="stats-section" *ngIf="draftStats$ | async as draftStats">
+        <h2>Draft Standings</h2>
+        <div class="draft-section" *ngFor="let draft of draftStats">
+            <h3>{{ draft.userName }} {{ draft.totalPoints }}</h3>
+            <table class="draft-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Team</th>
+                        <th>W</th>
+                        <th>L</th>
+                        <th>Pts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let teamStat of draft.teamStats">
+                        <td><img class="flag-icon" [src]="teamStat.team.flagUrl" /></td>
+                        <td>{{ teamStat.team.name }}</td>
+                        <td>{{ teamStat.wins }}</td>
+                        <td>{{ teamStat.losses }}</td>
+                        <td class="points-col">{{ teamStat.points }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Group Standings -->
+    <div class="stats-section" *ngIf="groupStats$ | async as groupStats">
+        <h2>Pool Standings</h2>
+        <div class="groups-grid">
+            <div class="group-section" *ngFor="let group of groupStats">
+                <h3>Pool {{ group.group }}</h3>
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th></th>
+                            <th>Team</th>
+                            <th>W</th>
+                            <th>L</th>
+                            <th>Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let stats of group.teams; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td><img class="flag-icon" [src]="stats.team.flagUrl" /></td>
+                            <td>{{ stats.team.name }}</td>
+                            <td>{{ stats.wins }}</td>
+                            <td>{{ stats.losses }}</td>
+                            <td class="points-col">{{ stats.points }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
