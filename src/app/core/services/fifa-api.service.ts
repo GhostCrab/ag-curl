@@ -17,7 +17,7 @@ import { DraftDatabaseService } from './draft-database.service';
     providedIn: 'root',
 })
 export class FIFAApiService {
-    private apiUrl = 'https://api.fifa.com/api/v3/calendar/matches?language=en&count=500&idSeason=285026';
+    private apiUrl = 'https://api.fifa.com/api/v3/calendar/matches?language=en&count=500&idSeason=285023';
 
     httpOptions = {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
