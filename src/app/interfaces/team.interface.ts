@@ -35,7 +35,8 @@ export class Team {
         abbr: string,
         group: string,
         rank: number,
-        odds: number
+        odds: number,
+        imgURL: string,
     ) {
         this.name = name;
         this.abbr = abbr;
@@ -45,7 +46,7 @@ export class Team {
         this.logOdds = Math.log10(this.odds);
         this.rrScore = 0;
         this.totalScore = 0;
-        this.imgURL = this.rank > 0 ? `https://api.fifa.com/api/v3/picture/flags-sq-1/${this.abbr}` : '';
+        this.imgURL = imgURL;
     }
 
     registerGame(game: IGame): void {

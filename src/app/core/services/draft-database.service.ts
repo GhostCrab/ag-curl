@@ -16,12 +16,13 @@ export class DraftDatabaseService {
     private teamdb: TeamDatabaseService
   ) {
     this.drafts = [
-      new Draft(this.userdb.get("Cooper"), [this.teamdb.get('ENG'),this.teamdb.get('TUR'),this.teamdb.get('HUN'),this.teamdb.get('SVK')]),
-      new Draft(this.userdb.get("TJ"),     [this.teamdb.get('FRA'),this.teamdb.get('SUI'),this.teamdb.get('SRB'),this.teamdb.get('ALB')]),
-      new Draft(this.userdb.get("Andrew"), [this.teamdb.get('GER'),this.teamdb.get('CRO'),this.teamdb.get('SCO'),this.teamdb.get('SVN')]),
-      new Draft(this.userdb.get("Ryan"),   [this.teamdb.get('POR'),this.teamdb.get('DEN'),this.teamdb.get('UKR'),this.teamdb.get('GEO')]),
-      new Draft(this.userdb.get("Micah"),  [this.teamdb.get('BEL'),this.teamdb.get('ESP'),this.teamdb.get('CZE'),this.teamdb.get('AUT')]),
-      new Draft(this.userdb.get("Bardia"), [this.teamdb.get('NED'),this.teamdb.get('ITA'),this.teamdb.get('POL'),this.teamdb.get('ROU')]),
+      new Draft(this.userdb.get("Bardia"), [teamdb.get('FRA'),teamdb.get('MAR'),teamdb.get('ECU'),teamdb.get('PAR'),teamdb.get('IRN'),teamdb.get('CPV')]),
+      new Draft(this.userdb.get("Brad"),   [teamdb.get('ESP'),teamdb.get('NOR'),teamdb.get('USA'),teamdb.get('CIV'),teamdb.get('EGY'),teamdb.get('UZB')]),
+      new Draft(this.userdb.get("Cooper"), [teamdb.get('ENG'),teamdb.get('MEX'),teamdb.get('JPN'),teamdb.get('SWE'),teamdb.get('ALG'),teamdb.get('TUN')]),
+      new Draft(this.userdb.get("TJ"),     [teamdb.get('BRA'),teamdb.get('COL'),teamdb.get('SEN'),teamdb.get('KOR'),teamdb.get('CZE'),teamdb.get('COD')]),
+      new Draft(this.userdb.get("Andrew"), [teamdb.get('ARG'),teamdb.get('URU'),teamdb.get('CRO'),teamdb.get('SCO'),teamdb.get('AUS'),teamdb.get('NZL')]),
+      new Draft(this.userdb.get("Micah"),  [teamdb.get('POR'),teamdb.get('NED'),teamdb.get('SUI'),teamdb.get('TUR'),teamdb.get('GHA'),teamdb.get('KSA')]),
+      new Draft(this.userdb.get("Ryan"),   [teamdb.get('GER'),teamdb.get('BEL'),teamdb.get('AUT'),teamdb.get('CAN'),teamdb.get('BIH'),teamdb.get('RSA')]),
     ];
   }
 
@@ -51,7 +52,7 @@ export class DraftDatabaseService {
       .filter((a) => a.rank > 0)
       .filter((a) => !pickedTeams.includes(a.abbr))
       .sort((a, b) => a.rank - b.rank);
-    let snakes = 0;
+    let rounds = 0;
     let draftIndex = 0;
     let draftDirection: 'up' | 'down' = 'up';
 
@@ -59,24 +60,23 @@ export class DraftDatabaseService {
     // users.forEach((user) => this.drafts.push(new Draft(user, [])));
 
     this.drafts = [
-        new Draft(this.userdb.get("Keegan"), []),
-        new Draft(this.userdb.get("Ryan"),   []),
-        new Draft(this.userdb.get("SBrad"),  []),
-        new Draft(this.userdb.get("Andrew"), []),
-        new Draft(this.userdb.get("TJ"),     []),
-        new Draft(this.userdb.get("Bardia"), []),
-        new Draft(this.userdb.get("Micah"),  []),
         new Draft(this.userdb.get("Cooper"), []),
+        new Draft(this.userdb.get("TJ"), []),
+        new Draft(this.userdb.get("Andrew"), []),
+        new Draft(this.userdb.get("Ryan"), []),
+        new Draft(this.userdb.get("Micah"), []),
+        new Draft(this.userdb.get("Bardia"), []),
+        new Draft(this.userdb.get("Brad"), []),
       ];
 
-    while (teams.length > 0) {
+    while (teams.length > 0 && rounds < 6) {
       if (draftIndex >= this.drafts.length) {
         draftDirection = 'down';
         draftIndex = this.drafts.length - 1;
       }
 
       if (draftIndex < 0) {
-        if (++snakes >= 2) break;
+        rounds++;
         draftDirection = 'up';
         draftIndex = 0;
       }

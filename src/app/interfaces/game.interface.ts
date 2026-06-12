@@ -91,11 +91,12 @@ export function newGameFromFIFA(result: FIFADataResult, teamdb: TeamDatabaseServ
   }
   
   if (init.knockout) {
-    if (result.StageName[0].Description === 'Round of 16') init.round = 1;
+    if (result.StageName[0].Description === 'Round of 32') init.round = 1;
+    else if (result.StageName[0].Description === 'Round of 16') init.round = 2;
     else if (result.StageName[0].Description === 'Quarter-final')
-      init.round = 2;
-    else if (result.StageName[0].Description === 'Semi-final') init.round = 3;
-    else if (result.StageName[0].Description === 'Final') init.round = 4;
+      init.round = 3;
+    else if (result.StageName[0].Description === 'Semi-final') init.round = 4;
+    else if (result.StageName[0].Description === 'Final') init.round = 5;
     else init.round = -1; // play-off for 3rd
   }
 
@@ -270,10 +271,11 @@ export class Game implements IGame {
   }
 
   public roundStr() {
-    if (this.round === 1) return '16';
-    if (this.round === 2) return 'QF';
-    if (this.round === 3) return 'SF';
-    if (this.round === 4) return 'F';
+    if (this.round === 1) return '32';
+    if (this.round === 2) return '16';
+    if (this.round === 3) return 'QF';
+    if (this.round === 4) return 'SF';
+    if (this.round === 5) return 'F';
 
     return '';
   }
@@ -372,21 +374,21 @@ export class Game implements IGame {
     if (this.round === -1) // playoff for 3rd doesnt count for points
       return 0;
 
-    let ro16Bonus = 0;
-    if (this.round === 1) // bonus point for making it to knockout
-      ro16Bonus = 1;
+    let ro32Bonus = 0;
+    if (this.round === 1) // bonus point for making it to Round of 32
+      ro32Bonus = 1;
 
     let finalBonus = 0;
-    if (this.round === 4) // bonus point for winning the final
+    if (this.round === 5) // bonus point for winning the final
       finalBonus = 1;
 
     if (this.tie(abstract)) return 1;
 
     if (this.winnerAbbr(abstract) === abbr) {
-      return 3 + ro16Bonus + finalBonus;
+      return 3 + ro32Bonus + finalBonus;
     }
 
-    return ro16Bonus;
+    return ro32Bonus;
   }
 
   public gameStr(): string {
@@ -407,26 +409,19 @@ export class Game implements IGame {
   }
 
   getBestGroupOf3rds(groups: string, teamGroups: TeamGroupsRanked): string {
-    // playing 1C
-    const thirdGroupStr = teamGroups['3'].slice(0, 4).map(info => info.group).sort().join("");
+    // For 2026 World Cup with 12 groups: find the best third-place team from the specified groups
+    // groups parameter is a string of group letters like "ABCDF"
 
-    /*
-    ABCD 3A 3D 3B 3C
-    ABCE 3A 3E 3B 3C
-    ABCF 3A 3F 3B 3C
-    ABDE 3D 3E 3A 3B
-    ABDF 3D 3F 3A 3B
-    ABEF 3E 3F 3B 3A
-    ACDE 3E 3D 3C 3A
-    ACDF 3F 3D 3C 3A
-    ACEF 3E 3F 3C 3A
-    ADEF 3E 3F 3D 3A
-    BCDE 3E 3D 3B 3C
-    BCDF 3F 3D 3C 3B
-    BCEF 3F 3E 3C 3B
-    BDEF 3F 3E 3D 3B
-    CDEF 3F 3E 3D 3C
-    */
+    // Filter the ranked third-place teams to only those from the specified groups
+    const candidateGroups = teamGroups['3'].filter(teamInfo => groups.includes(teamInfo.group));
+
+    // Return the group of the highest-ranked team (first in the filtered list)
+    if (candidateGroups.length > 0) {
+      return candidateGroups[0].group;
+    }
+
+    // Legacy code for older tournaments (Euro 2024 with 6 groups A-F)
+    const thirdGroupStr = teamGroups['3'].slice(0, 4).map(info => info.group).sort().join("");
 
     // vs 1B
     if (groups === 'ADEF') {
@@ -498,18 +493,29 @@ export class Game implements IGame {
       result.group = this.home.group;
 
     if (this.home.rank === 0) {
-      if (this.round === 1 && teamGroups) {
+      // Handle winner placeholders like "W74" - check this FIRST before round checks
+      if (this.home.name[0] === 'W') {
+        const gameIndex = Number(this.home.name.substring(1)) - 1;
+
+        result.homeTeamAbbr = this.winnerAbbr(results[gameIndex]);
+        result.homeLogOdds = this.winnerLogOdds(results[gameIndex]);
+      }
+      // Handle third-place team placeholders like "3ABCDF"
+      else if (this.home.name[0] === '3' && this.home.name.length > 1 && teamGroups) {
+        const possibleGroups = this.home.name.substring(1);
+        const group = this.getBestGroupOf3rds(possibleGroups, teamGroups);
+        result.homeTeamAbbr = teamGroups[group][2].abbr;
+        result.homeLogOdds = teamGroups[group][2].logOdds;
+      }
+      // Handle group position placeholders like "1A", "2B"
+      else if ((this.round === 1 || this.round === 2) && teamGroups) {
         const groupRank = Number(this.home.name[0]) - 1;
         const group = this.home.name.slice(-1);
 
         result.homeTeamAbbr = teamGroups[group][groupRank].abbr;
         result.homeLogOdds = teamGroups[group][groupRank].logOdds;
-      } else if (this.home.name[0] === 'W') {
-        const gameIndex = Number(this.home.name.substring(1)) - 1;
-
-        result.homeTeamAbbr = this.winnerAbbr(results[gameIndex]);
-        result.homeLogOdds = this.winnerLogOdds(results[gameIndex]);
-      } else if (this.home.name.length === 7) {
+      }
+      else if (this.home.name.length === 7) {
         const [homeAbbr, awayAbbr] = this.home.name.split('/');
         for (let gameIndex = results.length - 1; gameIndex >= 0; gameIndex--) {
           if(results[gameIndex].awayTeamAbbr === awayAbbr && results[gameIndex].homeTeamAbbr === homeAbbr) {
@@ -529,11 +535,28 @@ export class Game implements IGame {
     
 
     if (this.away.rank === 0) {
-      if (this.round === 1 && teamGroups) {
+      // Handle winner placeholders like "W74" - check this FIRST before round checks
+      if (this.away.name[0] === 'W') {
+        const gameIndex = Number(this.away.name.substring(1)) - 1;
+
+        result.awayTeamAbbr = this.winnerAbbr(results[gameIndex]);
+        result.awayLogOdds = this.winnerLogOdds(results[gameIndex]);
+      }
+      // Handle third-place team placeholders like "3ABCDF"
+      else if (this.away.name[0] === '3' && this.away.name.length > 1 && teamGroups) {
+        const possibleGroups = this.away.name.substring(1);
+        const group = this.getBestGroupOf3rds(possibleGroups, teamGroups);
+        result.awayTeamAbbr = teamGroups[group][2].abbr;
+        result.awayLogOdds = teamGroups[group][2].logOdds;
+      }
+      // Handle group position placeholders like "1A", "2B"
+      else if ((this.round === 1 || this.round === 2) && teamGroups) {
         const groupRank = Number(this.away.name[0]) - 1;
         let group = this.away.name.slice(-1);
 
-        if (groupRank === 2) {
+        // For 2026 World Cup: top 2 from each group + best 8 third-place teams advance
+        // This third-place logic is only relevant for older tournaments
+        if (groupRank === 2 && this.round === 2) {
           switch(this.home.name) {
             case '3rd: D/E/F': {
               group = this.getBestGroupOf3rds('DEF', teamGroups)
@@ -552,12 +575,8 @@ export class Game implements IGame {
 
         result.awayTeamAbbr = teamGroups[group][groupRank].abbr;
         result.awayLogOdds = teamGroups[group][groupRank].logOdds;
-      } else if (this.away.name[0] === 'W') {
-        const gameIndex = Number(this.away.name.substring(1)) - 1;
-
-        result.awayTeamAbbr = this.winnerAbbr(results[gameIndex]);
-        result.awayLogOdds = this.winnerLogOdds(results[gameIndex]);
-      } else if (this.away.name.length === 7) {
+      }
+      else if (this.away.name.length === 7) {
         const [homeAbbr, awayAbbr] = this.away.name.split('/');
         for (let gameIndex = results.length - 1; gameIndex >= 0; gameIndex--) {
           if(results[gameIndex].awayTeamAbbr === awayAbbr && results[gameIndex].homeTeamAbbr === homeAbbr) {

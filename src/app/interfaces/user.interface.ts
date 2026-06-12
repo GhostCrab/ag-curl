@@ -14,6 +14,7 @@ export class User implements IUser {
     }
 
     public abbr(): string {
+        if (this.name === "Brad") return "[V]";
         if (this.name.length > 0) return `[${this.name.charAt(0)}]`;
 
         return '';

@@ -12,6 +12,7 @@ export class UserDatabaseService {
     new User('Ryan'),
     new User('Micah'),
     new User('Bardia'),
+    new User('Brad'),
   ];
 
   public none: IUser = new User('');

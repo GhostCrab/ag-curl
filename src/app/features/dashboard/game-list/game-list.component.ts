@@ -31,4 +31,8 @@ export class GameListComponent implements OnInit {
       }
     });
   }
+
+  trackByGameId(index: number, game: IGame): number {
+    return game.id;
+  }
 }

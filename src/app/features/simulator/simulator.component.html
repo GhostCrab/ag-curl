@@ -8,10 +8,42 @@
 </div>
 
 <div *ngIf="iterations === iterate"class="list-container">
-  <mat-grid-list cols="3" rowHeight="2em" *ngFor="let result of metaResult.raw()">
-    <mat-grid-tile colspan="1"><div class="game-status"><img class="team-img" src="{{ teamdb.get(result.abbr).imgURL }}" />{{ teamdb.get(result.abbr).cleanName() }}</div></mat-grid-tile>
+  <h2>Overall Rankings</h2>
+  <mat-grid-list cols="4" rowHeight="2em" *ngFor="let result of overallResults; trackBy: trackByAbbr">
+    <mat-grid-tile colspan="1"><div class="game-status"><img class="team-img" [src]="result.imgURL" />{{ result.abbr }}</div></mat-grid-tile>
+    <mat-grid-tile colspan="1"><div class="game-status">{{ result.player }}</div></mat-grid-tile>
     <mat-grid-tile colspan="1"><div class="game-status">{{ result.score.toFixed(3) }}</div></mat-grid-tile>
     <mat-grid-tile colspan="1"><div class="game-status">{{ result.round.toFixed(2) }}</div></mat-grid-tile>
   </mat-grid-list>
+</div>
+
+<div *ngIf="iterations === iterate"class="list-container">
+  <h2>By Group</h2>
+  <div *ngFor="let groupData of groupResults; trackBy: trackByGroup">
+    <h3>Group {{ groupData.group }}</h3>
+    <mat-grid-list cols="4" rowHeight="2em" *ngFor="let result of groupData.teams; trackBy: trackByAbbr">
+      <mat-grid-tile colspan="1"><div class="game-status"><img class="team-img" [src]="result.imgURL" />{{ result.abbr }}</div></mat-grid-tile>
+      <mat-grid-tile colspan="1"><div class="game-status">{{ result.player }}</div></mat-grid-tile>
+      <mat-grid-tile colspan="1"><div class="game-status">{{ result.score.toFixed(3) }}</div></mat-grid-tile>
+      <mat-grid-tile colspan="1"><div class="game-status">{{ result.round.toFixed(2) }}</div></mat-grid-tile>
+    </mat-grid-list>
+  </div>
+</div>
+
+<div *ngIf="iterations === iterate"class="list-container">
+  <h2>By Player Draft</h2>
+  <div *ngFor="let draftData of draftResults; trackBy: trackByPlayer">
+    <h3>{{ draftData.player }}</h3>
+    <mat-grid-list cols="3" rowHeight="2em" *ngFor="let team of draftData.teams; trackBy: trackByAbbr">
+      <mat-grid-tile colspan="1"><div class="game-status"><img class="team-img" [src]="team.imgURL" />{{ team.abbr }}</div></mat-grid-tile>
+      <mat-grid-tile colspan="1"><div class="game-status">{{ team.score.toFixed(3) }}</div></mat-grid-tile>
+      <mat-grid-tile colspan="1"><div class="game-status">{{ team.round.toFixed(2) }}</div></mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list cols="3" rowHeight="2em">
+      <mat-grid-tile colspan="1"><div class="game-status"><strong>Total</strong></div></mat-grid-tile>
+      <mat-grid-tile colspan="1"><div class="game-status"><strong>{{ draftData.total.toFixed(3) }}</strong></div></mat-grid-tile>
+      <mat-grid-tile colspan="1"><div class="game-status"></div></mat-grid-tile>
+    </mat-grid-list>
+  </div>
 </div>
 
